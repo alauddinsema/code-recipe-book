@@ -42,10 +42,19 @@ export class AuthService {
     if (error) throw error;
   }
 
-  // Get current user
+  // Get current user with error handling
   static async getCurrentUser(): Promise<User | null> {
-    const { data: { user } } = await supabase.auth.getUser();
-    return user;
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Error getting current user:', error);
+        return null;
+      }
+      return user;
+    } catch (error) {
+      console.error('Failed to get current user:', error);
+      return null;
+    }
   }
 
   // Get user profile
@@ -77,10 +86,22 @@ export class AuthService {
     return data;
   }
 
-  // Listen to auth state changes
+  // Listen to auth state changes with error handling
   static onAuthStateChange(callback: (user: User | null) => void) {
-    return supabase.auth.onAuthStateChange((_event, session) => {
-      callback(session?.user || null);
-    });
+    try {
+      return supabase.auth.onAuthStateChange((_event, session) => {
+        callback(session?.user || null);
+      });
+    } catch (error) {
+      console.error('Failed to set up auth state listener:', error);
+      // Return a mock subscription that does nothing
+      return {
+        data: {
+          subscription: {
+            unsubscribe: () => {}
+          }
+        }
+      };
+    }
   }
 }

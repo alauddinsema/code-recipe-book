@@ -30,19 +30,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial user
-    AuthService.getCurrentUser().then(user => {
-      setUser(user);
-      setLoading(false);
+    // Safely initialize authentication with error handling
+    const initializeAuth = async () => {
+      try {
+        // Get initial user
+        const currentUser = await AuthService.getCurrentUser();
+        setUser(currentUser);
+
+        // Listen for auth changes
+        const { data: { subscription } } = AuthService.onAuthStateChange((user) => {
+          setUser(user);
+          setLoading(false);
+        });
+
+        // Store subscription for cleanup
+        return subscription;
+      } catch (error) {
+        console.error('Failed to initialize authentication:', error);
+        // Don't crash the app - just set loading to false
+        setUser(null);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    let subscription: any = null;
+
+    initializeAuth().then((sub) => {
+      subscription = sub;
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = AuthService.onAuthStateChange((user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -51,7 +74,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await AuthService.signIn(email, password);
       toast.success('Welcome back!');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to sign in');
+      console.error('Sign in error:', error);
+      const message = error instanceof Error ? error.message : 'Failed to sign in. Please check your connection and try again.';
+      toast.error(message);
       throw error;
     } finally {
       setLoading(false);
@@ -64,7 +89,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await AuthService.signUp(email, password, name);
       toast.success('Account created successfully!');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create account');
+      console.error('Sign up error:', error);
+      const message = error instanceof Error ? error.message : 'Failed to create account. Please check your connection and try again.';
+      toast.error(message);
       throw error;
     } finally {
       setLoading(false);
@@ -76,8 +103,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await AuthService.signOut();
       toast.success('Signed out successfully');
     } catch (error) {
+      console.error('Sign out error:', error);
       toast.error('Failed to sign out');
-      throw error;
+      // Don't throw error for sign out - just log it
     }
   };
 
