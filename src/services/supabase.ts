@@ -1,8 +1,25 @@
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/constants';
 
+// Validate environment variables
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error('Missing Supabase environment variables');
+  console.error('Missing Supabase environment variables:', {
+    SUPABASE_URL: !!SUPABASE_URL,
+    SUPABASE_ANON_KEY: !!SUPABASE_ANON_KEY
+  });
+  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+}
+
+// Validate URL format
+if (!SUPABASE_URL.startsWith('https://')) {
+  console.error('Invalid Supabase URL format:', SUPABASE_URL);
+  throw new Error('Supabase URL must start with https://');
+}
+
+// Validate key format (JWT should have 3 parts separated by dots)
+if (!SUPABASE_ANON_KEY.includes('.') || SUPABASE_ANON_KEY.split('.').length !== 3) {
+  console.error('Invalid Supabase anonymous key format');
+  throw new Error('Supabase anonymous key must be a valid JWT token');
 }
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

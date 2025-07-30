@@ -7,6 +7,15 @@ export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
+// Debug logging for environment variables (only in development)
+if (import.meta.env.DEV) {
+  console.log('Environment variables loaded:', {
+    SUPABASE_URL: SUPABASE_URL ? `${SUPABASE_URL.substring(0, 20)}...` : 'undefined',
+    SUPABASE_ANON_KEY: SUPABASE_ANON_KEY ? `${SUPABASE_ANON_KEY.substring(0, 20)}...` : 'undefined',
+    GEMINI_API_KEY: GEMINI_API_KEY ? `${GEMINI_API_KEY.substring(0, 20)}...` : 'undefined'
+  });
+}
+
 // Routes
 export const ROUTES = {
   HOME: '/',
