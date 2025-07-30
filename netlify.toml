@@ -1,10 +1,13 @@
 [build]
   # Build command
   command = "npm run build"
-  
+
   # Directory to publish (Vite builds to 'dist' by default)
   publish = "dist"
-  
+
+  # Functions directory
+  functions = "netlify/functions"
+
   # Node.js version
   environment = { NODE_VERSION = "18" }
 

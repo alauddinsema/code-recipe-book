@@ -47,6 +47,14 @@ cookingTimer.startCooking();`,
   }
 
   static async generateRecipe(request: GeminiRecipeRequest): Promise<GeminiRecipeResponse> {
+    // Use Netlify function for secure API calls in production
+    const isProduction = window.location.hostname !== 'localhost';
+
+    if (isProduction) {
+      return this.generateRecipeViaNetlify(request);
+    }
+
+    // Development mode - direct API call
     if (!GEMINI_API_KEY) {
       throw new Error('Gemini API key is not configured');
     }
@@ -198,6 +206,28 @@ Example format: ["Recipe Name 1", "Recipe Name 2", "Recipe Name 3", "Recipe Name
     } catch (error) {
       console.error('Failed to get recipe suggestions:', error);
       return [];
+    }
+  }
+
+  // New method for production - uses Netlify function
+  private static async generateRecipeViaNetlify(request: GeminiRecipeRequest): Promise<GeminiRecipeResponse> {
+    try {
+      console.log('Using Netlify function for recipe generation...');
+
+      const response = await axios.post('/.netlify/functions/generate-recipe', {
+        ingredients: request.ingredients
+      });
+
+      if (response.data && response.data.title) {
+        return response.data;
+      } else {
+        throw new Error('Invalid response from Netlify function');
+      }
+    } catch (error) {
+      console.error('Netlify function error, falling back to mock recipe:', error);
+
+      // Fallback to mock recipe if Netlify function fails
+      return this.getMockRecipe(request.ingredients);
     }
   }
 }
