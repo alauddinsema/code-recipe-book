@@ -51,10 +51,10 @@ export class FavoritesService {
       .select('id')
       .eq('user_id', userId)
       .eq('recipe_id', recipeId)
-      .single();
+      .limit(1);
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
-    return !!data;
+    if (error) throw error;
+    return data && data.length > 0;
   }
 
   // Get user's favorite recipes
@@ -210,10 +210,10 @@ export class FavoritesService {
       .select('id')
       .eq('collection_id', collectionId)
       .eq('recipe_id', recipeId)
-      .single();
+      .limit(1);
 
-    if (error && error.code !== 'PGRST116') throw error;
-    return !!data;
+    if (error) throw error;
+    return data && data.length > 0;
   }
 
   // Get public collections (for discovery)

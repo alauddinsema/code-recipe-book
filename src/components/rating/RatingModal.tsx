@@ -116,8 +116,11 @@ const RatingModal: React.FC<RatingModalProps> = ({
             {isEditing ? 'Update Rating' : 'Rate Recipe'}
           </h2>
           <button
+            type="button"
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            title="Close modal"
+            aria-label="Close rating modal"
           >
             <XMarkIcon className="w-6 h-6" />
           </button>

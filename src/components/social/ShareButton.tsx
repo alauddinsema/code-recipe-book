@@ -210,8 +210,11 @@ const ShareModal: React.FC<ShareModalProps> = ({
             Share
           </h3>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            title="Close share modal"
+            aria-label="Close share modal"
           >
             <XMarkIcon className="w-5 h-5" />
           </button>
