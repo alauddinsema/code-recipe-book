@@ -4,6 +4,7 @@ import { DIFFICULTY_LEVELS } from '../../utils/constants';
 import CodeSnippet from './CodeSnippet';
 import InteractiveSteps from './InteractiveSteps';
 import TimerPanel from './TimerPanel';
+import IngredientScaler from './IngredientScaler';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -115,20 +116,11 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Ingredients */}
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-              Ingredients
-            </h2>
-            <ul className="space-y-2">
-              {recipe.ingredients.map((ingredient, index) => (
-                <li key={index} className="flex items-start space-x-3">
-                  <span className="flex-shrink-0 w-2 h-2 bg-primary-500 rounded-full mt-2"></span>
-                  <span className="text-gray-700 dark:text-gray-300">{ingredient}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {/* Ingredient Scaler */}
+          <IngredientScaler
+            ingredients={recipe.ingredients}
+            originalServings={recipe.servings || 4}
+          />
 
           {/* Interactive Instructions */}
           <InteractiveSteps
