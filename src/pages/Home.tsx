@@ -1,35 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { RecipeCard, RecipeSuggestion, SEOHead } from '../components';
+import { AdvancedSearchFilters, type SearchFilters } from '../components/search';
 import { RecipeService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
 import type { Recipe, GeminiRecipeResponse } from '../types';
-import { ROUTES, RECIPE_CATEGORIES, DIFFICULTY_LEVELS } from '../utils/constants';
+import { ROUTES } from '../utils/constants';
 import toast from 'react-hot-toast';
 
 const Home: React.FC = () => {
   const { user } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAISuggestion, setShowAISuggestion] = useState(false);
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
+    query: '',
+    category: '',
+    difficulty: '',
+    tags: [],
+    prepTimeRange: [0, 240],
+    cookTimeRange: [0, 480],
+    servingsRange: [1, 12],
+    sortBy: 'newest',
+    sortOrder: 'desc',
+    searchIn: ['title', 'description']
+  });
 
   useEffect(() => {
     loadRecipes();
-  }, [selectedCategory, selectedDifficulty]);
+  }, []);
 
   const loadRecipes = async () => {
     try {
       setLoading(true);
-      const { recipes: fetchedRecipes } = await RecipeService.getRecipes(
-        0,
-        20,
-        selectedCategory || undefined,
-        selectedDifficulty || undefined
-      );
+      const { recipes: fetchedRecipes } = await RecipeService.getRecipes(0, 50);
       setRecipes(fetchedRecipes);
     } catch (error) {
       console.error('Failed to load recipes:', error);
@@ -39,19 +44,33 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      loadRecipes();
-      return;
-    }
+  const handleFiltersChange = useCallback((filters: SearchFilters) => {
+    setSearchFilters(filters);
+  }, []);
 
+  const handleSearch = async () => {
     try {
       setLoading(true);
-      const searchResults = await RecipeService.searchRecipes(searchQuery, {
-        category: selectedCategory || undefined,
-        difficulty: selectedDifficulty || undefined,
-      });
-      setRecipes(searchResults);
+
+      if (!searchFilters.query.trim() && !hasActiveFilters()) {
+        // No search query or filters, load all recipes
+        const { recipes: fetchedRecipes } = await RecipeService.getRecipes(0, 50);
+        setRecipes(fetchedRecipes);
+      } else {
+        // Perform advanced search
+        const searchResults = await RecipeService.searchRecipes(searchFilters.query, {
+          category: searchFilters.category || undefined,
+          difficulty: searchFilters.difficulty || undefined,
+          tags: searchFilters.tags.length > 0 ? searchFilters.tags : undefined,
+          prepTimeRange: searchFilters.prepTimeRange,
+          cookTimeRange: searchFilters.cookTimeRange,
+          servingsRange: searchFilters.servingsRange,
+          sortBy: searchFilters.sortBy,
+          sortOrder: searchFilters.sortOrder,
+          searchIn: searchFilters.searchIn
+        });
+        setRecipes(searchResults);
+      }
     } catch (error) {
       console.error('Search failed:', error);
       toast.error('Search failed');
@@ -60,11 +79,12 @@ const Home: React.FC = () => {
     }
   };
 
-  const clearFilters = () => {
-    setSearchQuery('');
-    setSelectedCategory('');
-    setSelectedDifficulty('');
-    loadRecipes();
+  const hasActiveFilters = () => {
+    return searchFilters.category || searchFilters.difficulty ||
+           searchFilters.tags.length > 0 || searchFilters.prepTimeRange[0] > 0 ||
+           searchFilters.prepTimeRange[1] < 240 || searchFilters.cookTimeRange[0] > 0 ||
+           searchFilters.cookTimeRange[1] < 480 || searchFilters.servingsRange[0] > 1 ||
+           searchFilters.servingsRange[1] < 12;
   };
 
   const handleAIRecipeGenerated = (aiRecipe: GeminiRecipeResponse) => {
@@ -182,71 +202,14 @@ const Home: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search Bar */}
-            <div className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search recipes..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  className="input-field pl-10 w-full"
-                />
-                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="input-field"
-              >
-                <option value="">All Categories</option>
-                {RECIPE_CATEGORIES.map((category) => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="input-field"
-              >
-                <option value="">All Difficulties</option>
-                {DIFFICULTY_LEVELS.map((difficulty) => (
-                  <option key={difficulty.value} value={difficulty.value}>
-                    {difficulty.label}
-                  </option>
-                ))}
-              </select>
-
-              <button
-                onClick={handleSearch}
-                className="btn-primary whitespace-nowrap"
-              >
-                Search
-              </button>
-
-              {(searchQuery || selectedCategory || selectedDifficulty) && (
-                <button
-                  onClick={clearFilters}
-                  className="btn-secondary whitespace-nowrap"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-          </div>
+        {/* Advanced Search and Filters */}
+        <div className="mb-8">
+          <AdvancedSearchFilters
+            onFiltersChange={handleFiltersChange}
+            onSearch={handleSearch}
+            loading={loading}
+            initialFilters={searchFilters}
+          />
         </div>
 
         {/* View Mode Toggle and Results Count */}
@@ -300,7 +263,7 @@ const Home: React.FC = () => {
               No recipes found
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              {searchQuery || selectedCategory || selectedDifficulty
+              {searchFilters.query || hasActiveFilters()
                 ? 'Try adjusting your search criteria'
                 : 'Be the first to add a recipe!'}
             </p>
