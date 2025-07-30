@@ -12,3 +12,4 @@ export { RecipeCard, RecipeDetail, CodeSnippet } from './recipe';
 export { RecipeForm } from './forms';
 export { RecipeSuggestion } from './ai';
 export { AdvancedSearchFilters } from './search';
+export { FavoriteButton, CollectionModal } from './favorites';

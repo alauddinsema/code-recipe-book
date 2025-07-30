@@ -3,14 +3,17 @@ import { Link } from 'react-router-dom';
 import type { Recipe } from '../../types';
 import { ROUTES, DIFFICULTY_LEVELS } from '../../utils/constants';
 import { RecipeModal } from '../ui';
+import { FavoriteButton, CollectionModal } from '../favorites';
 
 interface RecipeCardProps {
   recipe: Recipe;
   onSaveRecipe?: (recipe: Recipe) => void;
+  onFavoriteToggle?: (isFavorited: boolean) => void;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe }) => {
+const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe, onFavoriteToggle }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
@@ -50,14 +53,19 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe }) => {
           </div>
         )}
         
-        {/* Difficulty Badge */}
-        {recipe.difficulty && (
-          <div className="absolute top-3 right-3">
+        {/* Top Right Corner - Difficulty Badge and Favorite Button */}
+        <div className="absolute top-3 right-3 flex items-center space-x-2">
+          {recipe.difficulty && (
             <span className={`px-2 py-1 text-xs font-medium rounded-full ${getDifficultyColor(recipe.difficulty)}`}>
               {DIFFICULTY_LEVELS.find(d => d.value === recipe.difficulty)?.label || recipe.difficulty}
             </span>
-          </div>
-        )}
+          )}
+          <FavoriteButton
+            recipeId={recipe.id}
+            size="sm"
+            onToggle={onFavoriteToggle}
+          />
+        </div>
 
         {/* Code Badge */}
         {recipe.code_snippet && (
@@ -154,6 +162,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe }) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={onSaveRecipe}
+      />
+
+      {/* Collection Modal */}
+      <CollectionModal
+        isOpen={showCollectionModal}
+        onClose={() => setShowCollectionModal(false)}
+        recipeId={recipe.id}
+        recipeName={recipe.title}
       />
     </div>
   );

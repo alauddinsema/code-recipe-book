@@ -8,6 +8,7 @@ import {
   AddRecipe,
   Profile,
   RecipeDetails,
+  Favorites,
   Login,
   Register
 } from './pages';
@@ -27,6 +28,7 @@ function App() {
                     <Route path={ROUTES.ADD_RECIPE} element={<AddRecipe />} />
                     <Route path={ROUTES.RECIPE_DETAILS} element={<RecipeDetails />} />
                     <Route path={ROUTES.PROFILE} element={<Profile />} />
+                    <Route path={ROUTES.FAVORITES} element={<Favorites />} />
                     <Route path={ROUTES.LOGIN} element={<Login />} />
                     <Route path={ROUTES.REGISTER} element={<Register />} />
                   </Routes>

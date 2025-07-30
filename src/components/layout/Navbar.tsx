@@ -24,6 +24,7 @@ const Navbar: React.FC = () => {
   const navLinks = [
     { path: ROUTES.HOME, label: 'Home' },
     { path: ROUTES.ADD_RECIPE, label: 'Add Recipe', requireAuth: true },
+    { path: ROUTES.FAVORITES, label: 'Favorites', requireAuth: true },
     { path: ROUTES.PROFILE, label: 'Profile', requireAuth: true },
   ];
 

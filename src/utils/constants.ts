@@ -13,6 +13,8 @@ export const ROUTES = {
   ADD_RECIPE: '/add-recipe',
   RECIPE_DETAILS: '/recipe/:id',
   PROFILE: '/profile',
+  FAVORITES: '/favorites',
+  COLLECTIONS: '/collections',
   LOGIN: '/login',
   REGISTER: '/register',
 } as const;
