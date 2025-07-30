@@ -67,10 +67,23 @@ export class RecipeService {
   // Create new recipe
   static async createRecipe(recipeData: RecipeFormData, userId: string, userName?: string): Promise<Recipe> {
     try {
-      const insertData: RecipeInsert = {
-        ...recipeData,
+      // Explicitly map only the fields we know exist in the database
+      const insertData = {
+        title: recipeData.title,
+        description: recipeData.description,
+        ingredients: recipeData.ingredients,
+        steps: recipeData.steps,
+        code_snippet: recipeData.code_snippet || null,
+        language: recipeData.language || null,
+        difficulty: recipeData.difficulty || null,
+        category: recipeData.category || null,
+        prep_time: recipeData.prep_time || null,
+        cook_time: recipeData.cook_time || null,
+        servings: recipeData.servings || null,
         author_id: userId,
         author_name: userName || 'Anonymous',
+        image_url: recipeData.image_url || null,
+        tags: recipeData.tags || null,
       };
 
       console.log('Creating recipe with data:', { ...insertData, ingredients: insertData.ingredients?.length, steps: insertData.steps?.length });
