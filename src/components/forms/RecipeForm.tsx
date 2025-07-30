@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../ui';
 import type { RecipeFormData } from '../../types';
 import { RECIPE_CATEGORIES, DIFFICULTY_LEVELS, PROGRAMMING_LANGUAGES } from '../../utils/constants';
+import { NutritionCalculator } from '../nutrition';
 
 interface RecipeFormProps {
   initialData?: Partial<RecipeFormData>;
@@ -169,7 +170,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           Basic Information
         </h2>
         
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Recipe Title *
@@ -178,12 +179,20 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className={`input-field ${errors.title ? 'border-red-500' : ''}`}
               placeholder="Enter recipe title"
+              required
+              maxLength={100}
+              autoFocus
+              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+                errors.title ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
             />
             {errors.title && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>
             )}
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {formData.title.length}/100 characters
+            </p>
           </div>
 
           <div>
@@ -193,13 +202,20 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             <textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              rows={3}
-              className={`input-field ${errors.description ? 'border-red-500' : ''}`}
               placeholder="Describe your recipe"
+              required
+              rows={4}
+              maxLength={500}
+              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-y ${
+                errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
             />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
             )}
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {formData.description.length}/500 characters
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -211,6 +227,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 value={formData.category}
                 onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                 className="input-field"
+                aria-label="Recipe Category"
               >
                 <option value="">Select category</option>
                 {RECIPE_CATEGORIES.map((category) => (
@@ -229,6 +246,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 value={formData.difficulty}
                 onChange={(e) => setFormData(prev => ({ ...prev, difficulty: e.target.value as 'easy' | 'medium' | 'hard' }))}
                 className="input-field"
+                aria-label="Recipe Difficulty"
               >
                 {DIFFICULTY_LEVELS.map((difficulty) => (
                   <option key={difficulty.value} value={difficulty.value}>
@@ -303,15 +321,19 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Image URL (optional)
+              Recipe Image (optional)
             </label>
             <input
               type="url"
-              value={formData.image_url}
+              value={formData.image_url || ''}
               onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-              className="input-field"
-              placeholder="https://example.com/image.jpg"
+              placeholder="Enter image URL (e.g., https://example.com/image.jpg)"
+              disabled={loading}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             />
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Enter a direct URL to an image for your recipe
+            </p>
           </div>
         </div>
       </div>
@@ -354,6 +376,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     type="button"
                     onClick={() => removeIngredient(index)}
                     className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    aria-label={`Remove ingredient: ${ingredient}`}
+                    title={`Remove ingredient: ${ingredient}`}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -406,6 +430,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     type="button"
                     onClick={() => removeStep(index)}
                     className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    aria-label={`Remove step ${index + 1}`}
+                    title={`Remove step ${index + 1}`}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -433,6 +459,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               value={formData.language}
               onChange={(e) => setFormData(prev => ({ ...prev, language: e.target.value }))}
               className={`input-field ${errors.language ? 'border-red-500' : ''}`}
+              aria-label="Programming Language"
             >
               <option value="">Select language</option>
               {PROGRAMMING_LANGUAGES.map((lang) => (
@@ -501,6 +528,8 @@ function calculateCookingTime(servings) {
                     type="button"
                     onClick={() => removeTag(index)}
                     className="text-primary-500 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                    aria-label={`Remove tag: ${tag}`}
+                    title={`Remove tag: ${tag}`}
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -510,6 +539,29 @@ function calculateCookingTime(servings) {
               ))}
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Nutrition Information */}
+      <div className="card">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+          Nutrition Information
+        </h2>
+
+        <NutritionCalculator
+          ingredients={formData.ingredients}
+          servings={formData.servings || 1}
+          onNutritionCalculated={(nutrition) => {
+            setFormData(prev => ({ ...prev, nutrition }));
+          }}
+        />
+
+        <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <p className="text-sm text-blue-700 dark:text-blue-300">
+            <strong>Note:</strong> Nutrition values are automatically calculated based on your ingredients.
+            The calculation uses a built-in nutrition database and may not be 100% accurate.
+            For precise nutrition information, consider consulting with a nutritionist.
+          </p>
         </div>
       </div>
 

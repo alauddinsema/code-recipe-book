@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
+import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import type { Recipe } from '../../types';
 import { DIFFICULTY_LEVELS } from '../../utils/constants';
 import CodeSnippet from './CodeSnippet';
 import InteractiveSteps from './InteractiveSteps';
 import TimerPanel from './TimerPanel';
 import IngredientScaler from './IngredientScaler';
-import { RatingDisplay, RatingModal, ReviewList } from '../rating';
+import { RatingDisplay, RatingModal, ReviewList, RatingStatistics } from '../rating';
+import { ExportModal } from '../export';
+import { ShareButton } from '../social';
+import { NutritionDisplay, NutritionCalculator } from '../nutrition';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface RecipeDetailProps {
@@ -15,6 +19,8 @@ interface RecipeDetailProps {
 const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
   const { user } = useAuth();
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [scaledIngredients, setScaledIngredients] = useState<string[]>([]);
   const [currentRecipe, setCurrentRecipe] = useState(recipe);
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -43,6 +49,44 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
       month: 'long',
       day: 'numeric',
     });
+  };
+
+  const handleSaveScaledRecipe = async (scaledIngredients: string[], targetServings: number) => {
+    if (!user) {
+      alert('Please log in to save recipes.');
+      return;
+    }
+
+    try {
+      const scaledRecipe = {
+        title: `${recipe.title} (${targetServings} servings)`,
+        description: `${recipe.description}\n\nScaled from original ${recipe.servings || 1} servings to ${targetServings} servings.`,
+        ingredients: scaledIngredients,
+        instructions: recipe.instructions,
+        prep_time: recipe.prep_time,
+        cook_time: recipe.cook_time,
+        servings: targetServings,
+        difficulty: recipe.difficulty,
+        category: recipe.category,
+        tags: recipe.tags,
+        code_snippet: recipe.code_snippet,
+        language: recipe.language,
+        nutrition: recipe.nutrition ? {
+          ...recipe.nutrition,
+          // Scale nutrition proportionally
+          calories: recipe.nutrition.calories ? Math.round(recipe.nutrition.calories * targetServings / (recipe.servings || 1)) : undefined,
+          protein: recipe.nutrition.protein ? Math.round(recipe.nutrition.protein * targetServings / (recipe.servings || 1) * 100) / 100 : undefined,
+          carbohydrates: recipe.nutrition.carbohydrates ? Math.round(recipe.nutrition.carbohydrates * targetServings / (recipe.servings || 1) * 100) / 100 : undefined,
+          fat: recipe.nutrition.fat ? Math.round(recipe.nutrition.fat * targetServings / (recipe.servings || 1) * 100) / 100 : undefined,
+        } : undefined
+      };
+
+      await RecipeService.createRecipe(scaledRecipe);
+      alert('Scaled recipe saved successfully!');
+    } catch (error) {
+      console.error('Error saving scaled recipe:', error);
+      alert('Failed to save scaled recipe. Please try again.');
+    }
   };
 
   return (
@@ -118,14 +162,28 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
             />
           </div>
 
-          {user && (
+          <div className="flex flex-col sm:flex-row gap-3">
+            {user && (
+              <button
+                onClick={() => setShowRatingModal(true)}
+                className="btn-primary text-sm px-4 py-2"
+              >
+                Rate Recipe
+              </button>
+            )}
+            <ShareButton
+              recipe={currentRecipe}
+              size="sm"
+              className="text-sm px-4 py-2"
+            />
             <button
-              onClick={() => setShowRatingModal(true)}
-              className="btn-primary text-sm px-4 py-2"
+              onClick={() => setShowExportModal(true)}
+              className="btn-outline text-sm px-4 py-2 flex items-center space-x-2"
             >
-              Rate Recipe
+              <DocumentArrowDownIcon className="w-4 h-4" />
+              <span>Export</span>
             </button>
-          )}
+          </div>
         </div>
       </div>
 
@@ -147,6 +205,8 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
           <IngredientScaler
             ingredients={recipe.ingredients}
             originalServings={recipe.servings || 4}
+            onScaledIngredientsChange={setScaledIngredients}
+            onSaveScaledRecipe={handleSaveScaledRecipe}
           />
 
           {/* Interactive Instructions */}
@@ -180,6 +240,22 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
             cookTime={recipe.cook_time}
             recipeTitle={recipe.title}
           />
+
+          {/* Nutrition Information */}
+          {recipe.nutrition ? (
+            <NutritionDisplay
+              nutrition={recipe.nutrition}
+              servings={recipe.servings || 1}
+              className="card"
+            />
+          ) : (
+            <div className="card">
+              <NutritionCalculator
+                ingredients={recipe.ingredients}
+                servings={recipe.servings || 1}
+              />
+            </div>
+          )}
 
           {/* Tags */}
           {recipe.tags && recipe.tags.length > 0 && (
@@ -241,6 +317,21 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
         </div>
       </div>
 
+      {/* Rating Statistics Section */}
+      {(currentRecipe.rating_count || 0) > 0 && (
+        <div className="mt-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Rating Statistics
+          </h3>
+          <RatingStatistics
+            recipeId={recipe.id}
+            averageRating={currentRecipe.average_rating || 0}
+            ratingCount={currentRecipe.rating_count || 0}
+            showDistribution={true}
+          />
+        </div>
+      )}
+
       {/* Reviews Section */}
       <div className="mt-12">
         <ReviewList
@@ -267,6 +358,13 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
           }));
           window.location.reload();
         }}
+      />
+
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        recipes={[currentRecipe]}
+        title="Export Recipe"
       />
     </div>
   );

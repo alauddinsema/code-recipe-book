@@ -32,6 +32,23 @@ CREATE TABLE IF NOT EXISTS recipes (
   author_name TEXT,
   image_url TEXT,
   tags TEXT[] DEFAULT '{}',
+  -- Nutritional information (per serving)
+  nutrition_calories DECIMAL(8,2),
+  nutrition_protein DECIMAL(8,2),
+  nutrition_carbohydrates DECIMAL(8,2),
+  nutrition_fat DECIMAL(8,2),
+  nutrition_fiber DECIMAL(8,2),
+  nutrition_sugar DECIMAL(8,2),
+  nutrition_sodium DECIMAL(8,2),
+  nutrition_cholesterol DECIMAL(8,2),
+  nutrition_saturated_fat DECIMAL(8,2),
+  nutrition_trans_fat DECIMAL(8,2),
+  nutrition_vitamin_a DECIMAL(8,2),
+  nutrition_vitamin_c DECIMAL(8,2),
+  nutrition_calcium DECIMAL(8,2),
+  nutrition_iron DECIMAL(8,2),
+  nutrition_potassium DECIMAL(8,2),
+  nutrition_per_serving BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

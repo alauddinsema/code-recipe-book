@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { RecipeCard, Button, SEOHead } from '../components';
+import { RecipeCard, Button, SEOHead, RecipeListSkeleton } from '../components';
 import { RecipeService } from '../services/recipes';
 import { useAuth } from '../contexts/AuthContext';
 import type { Recipe } from '../types';
@@ -140,9 +140,7 @@ const Profile: React.FC = () => {
         {activeTab === 'recipes' && (
           <div>
             {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-              </div>
+              <RecipeListSkeleton count={6} />
             ) : userRecipes.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {userRecipes.map((recipe) => (

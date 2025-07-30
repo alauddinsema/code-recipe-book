@@ -1,19 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { RecipeCard, RecipeSuggestion, SEOHead } from '../components';
+import { DocumentArrowUpIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import { RecipeCard, RecipeSuggestion, SEOHead, RecipeListSkeleton, LazyRecipeCard, SimplePullToRefresh, InfiniteScrollContainer, ImportModal, ExportModal } from '../components';
 import { AdvancedSearchFilters, type SearchFilters } from '../components/search';
 import { RecipeService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
+import { useInfiniteScrollWithFilters } from '../hooks';
 import type { Recipe, GeminiRecipeResponse } from '../types';
 import { ROUTES } from '../utils/constants';
 import toast from 'react-hot-toast';
 
 const Home: React.FC = () => {
   const { user } = useAuth();
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAISuggestion, setShowAISuggestion] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: '',
     category: '',
@@ -29,20 +31,63 @@ const Home: React.FC = () => {
     searchIn: ['title', 'description']
   });
 
-  useEffect(() => {
-    loadRecipes();
+  // Infinite scroll implementation
+  const fetchRecipes = useCallback(async (page: number, pageSize: number, filters: SearchFilters) => {
+    try {
+      const offset = (page - 1) * pageSize;
+
+      if (!filters.query.trim() && !hasActiveFiltersForSearch(filters)) {
+        // No search query or filters, load all recipes
+        const { recipes, total } = await RecipeService.getRecipes(offset, pageSize);
+        return {
+          items: recipes,
+          hasMore: recipes.length === pageSize,
+          total
+        };
+      } else {
+        // Perform advanced search with pagination
+        const searchResults = await RecipeService.searchRecipes(filters.query, {
+          category: filters.category || undefined,
+          difficulty: filters.difficulty || undefined,
+          tags: filters.tags.length > 0 ? filters.tags : undefined,
+          prepTimeRange: filters.prepTimeRange,
+          cookTimeRange: filters.cookTimeRange,
+          servingsRange: filters.servingsRange,
+          sortBy: filters.sortBy,
+          sortOrder: filters.sortOrder,
+          searchIn: filters.searchIn,
+          offset,
+          limit: pageSize
+        });
+
+        return {
+          items: searchResults,
+          hasMore: searchResults.length === pageSize
+        };
+      }
+    } catch (error) {
+      console.error('Failed to fetch recipes:', error);
+      throw error;
+    }
   }, []);
 
-  const loadRecipes = async () => {
+  const {
+    items: recipes,
+    loading,
+    hasMore,
+    error,
+    loadingRef,
+    refresh,
+    retry
+  } = useInfiniteScrollWithFilters(fetchRecipes, searchFilters, 20);
+
+  const handleRefresh = async () => {
     try {
-      setLoading(true);
-      const { recipes: fetchedRecipes } = await RecipeService.getRecipes(0, 50);
-      setRecipes(fetchedRecipes);
+      await refresh();
+      toast.success('Recipes refreshed!');
     } catch (error) {
-      console.error('Failed to load recipes:', error);
-      toast.error('Failed to load recipes');
-    } finally {
-      setLoading(false);
+      console.error('Failed to refresh recipes:', error);
+      toast.error('Failed to refresh recipes');
     }
   };
 
@@ -50,36 +95,14 @@ const Home: React.FC = () => {
     setSearchFilters(filters);
   }, []);
 
-  const handleSearch = async () => {
-    try {
-      setLoading(true);
+  const handleDebouncedSearch = useCallback((filters: SearchFilters) => {
+    setSearchFilters(filters);
+  }, []);
 
-      if (!searchFilters.query.trim() && !hasActiveFilters()) {
-        // No search query or filters, load all recipes
-        const { recipes: fetchedRecipes } = await RecipeService.getRecipes(0, 50);
-        setRecipes(fetchedRecipes);
-      } else {
-        // Perform advanced search
-        const searchResults = await RecipeService.searchRecipes(searchFilters.query, {
-          category: searchFilters.category || undefined,
-          difficulty: searchFilters.difficulty || undefined,
-          tags: searchFilters.tags.length > 0 ? searchFilters.tags : undefined,
-          prepTimeRange: searchFilters.prepTimeRange,
-          cookTimeRange: searchFilters.cookTimeRange,
-          servingsRange: searchFilters.servingsRange,
-          sortBy: searchFilters.sortBy,
-          sortOrder: searchFilters.sortOrder,
-          searchIn: searchFilters.searchIn
-        });
-        setRecipes(searchResults);
-      }
-    } catch (error) {
-      console.error('Search failed:', error);
-      toast.error('Search failed');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleSearch = useCallback(() => {
+    // Trigger refresh with current filters
+    refresh();
+  }, [refresh]);
 
   const hasActiveFilters = () => {
     return searchFilters.category || searchFilters.difficulty ||
@@ -87,6 +110,14 @@ const Home: React.FC = () => {
            searchFilters.prepTimeRange[1] < 240 || searchFilters.cookTimeRange[0] > 0 ||
            searchFilters.cookTimeRange[1] < 480 || searchFilters.servingsRange[0] > 1 ||
            searchFilters.servingsRange[1] < 12;
+  };
+
+  const hasActiveFiltersForSearch = (filters: SearchFilters) => {
+    return filters.category || filters.difficulty ||
+           filters.tags.length > 0 || filters.prepTimeRange[0] > 0 ||
+           filters.prepTimeRange[1] < 240 || filters.cookTimeRange[0] > 0 ||
+           filters.cookTimeRange[1] < 480 || filters.servingsRange[0] > 1 ||
+           filters.servingsRange[1] < 12;
   };
 
   const handleAIRecipeGenerated = (aiRecipe: GeminiRecipeResponse) => {
@@ -203,16 +234,20 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Advanced Search and Filters */}
-        <div className="mb-8">
-          <AdvancedSearchFilters
-            onFiltersChange={handleFiltersChange}
-            onSearch={handleSearch}
-            loading={loading}
-            initialFilters={searchFilters}
-          />
-        </div>
+      <SimplePullToRefresh onRefresh={handleRefresh} className="h-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Advanced Search and Filters */}
+          <div className="mb-8">
+            <AdvancedSearchFilters
+              onFiltersChange={handleFiltersChange}
+              onSearch={handleSearch}
+              onDebouncedSearch={handleDebouncedSearch}
+              loading={loading}
+              initialFilters={searchFilters}
+              enableAutoSearch={true}
+              searchDelay={500}
+            />
+          </div>
 
         {/* View Mode Toggle and Results Count */}
         <div className="flex items-center justify-between mb-6">
@@ -221,6 +256,29 @@ const Home: React.FC = () => {
           </p>
 
           <div className="flex items-center space-x-2">
+            {/* Import/Export buttons */}
+            {user && (
+              <>
+                <button
+                  onClick={() => setShowImportModal(true)}
+                  className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                  title="Import Recipes"
+                >
+                  <DocumentArrowUpIcon className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setShowExportModal(true)}
+                  className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                  title="Export Recipes"
+                  disabled={recipes.length === 0}
+                >
+                  <DocumentArrowDownIcon className="w-5 h-5" />
+                </button>
+                <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-2"></div>
+              </>
+            )}
+
+            {/* View mode buttons */}
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2 rounded-lg transition-colors duration-200 ${
@@ -248,52 +306,47 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && recipes.length === 0 && (
-          <div className="text-center py-12">
-            <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              No recipes found
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              {searchFilters.query || hasActiveFilters()
-                ? 'Try adjusting your search criteria'
-                : 'Be the first to add a recipe!'}
-            </p>
-            {user && (
-              <Link to={ROUTES.ADD_RECIPE} className="btn-primary">
-                Add Recipe
-              </Link>
-            )}
-          </div>
-        )}
-
-        {/* Recipe Grid/List */}
-        {!loading && recipes.length > 0 && (
-          <div className={
-            viewMode === 'grid'
-              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-              : 'space-y-4'
-          }>
-            {recipes.map((recipe) => (
+        {/* Recipe Grid/List with Infinite Scroll */}
+        <InfiniteScrollContainer
+          items={recipes}
+          loading={loading}
+          hasMore={hasMore}
+          error={error}
+          loadingRef={loadingRef}
+          onRetry={retry}
+          onRefresh={refresh}
+          renderItem={(recipe) => (
+            <LazyRecipeCard
+              fallback={
+                <div className="h-96 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
+              }
+            >
               <RecipeCard
-                key={recipe.id}
                 recipe={recipe}
                 onSaveRecipe={handleSaveRecipe}
               />
-            ))}
-          </div>
-        )}
-      </div>
+            </LazyRecipeCard>
+          )}
+          renderSkeleton={() => (
+            <div className="h-96 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
+          )}
+          skeletonCount={8}
+          emptyMessage={
+            searchFilters.query || hasActiveFilters()
+              ? 'No recipes found. Try adjusting your search criteria.'
+              : 'No recipes found. Be the first to add a recipe!'
+          }
+          emptyIcon={
+            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          }
+          gridCols={viewMode === 'grid' ? 4 : 1}
+          gap="lg"
+          className="mb-8"
+        />
+        </div>
+      </SimplePullToRefresh>
 
       {/* AI Recipe Suggestion Modal */}
       {showAISuggestion && (
@@ -302,6 +355,26 @@ const Home: React.FC = () => {
           onClose={() => setShowAISuggestion(false)}
         />
       )}
+
+      {/* Import Modal */}
+      <ImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImportComplete={(result) => {
+          // Refresh the recipes list after import
+          if (result.success.length > 0) {
+            refetch();
+          }
+        }}
+      />
+
+      {/* Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        recipes={recipes}
+        title="Export Recipes"
+      />
     </div>
   );
 };

@@ -23,6 +23,35 @@ export interface Recipe {
   average_rating?: number;
   rating_count?: number;
   total_rating_points?: number;
+  // Nutritional information
+  nutrition?: NutritionInfo;
+}
+
+export interface NutritionInfo {
+  calories?: number;
+  protein?: number; // grams
+  carbohydrates?: number; // grams
+  fat?: number; // grams
+  fiber?: number; // grams
+  sugar?: number; // grams
+  sodium?: number; // milligrams
+  cholesterol?: number; // milligrams
+  saturated_fat?: number; // grams
+  trans_fat?: number; // grams
+  vitamin_a?: number; // IU
+  vitamin_c?: number; // milligrams
+  calcium?: number; // milligrams
+  iron?: number; // milligrams
+  potassium?: number; // milligrams
+  // Per serving values
+  per_serving?: boolean;
+}
+
+export interface IngredientNutrition {
+  ingredient: string;
+  amount?: number;
+  unit?: string;
+  nutrition: NutritionInfo;
 }
 
 export interface User {
@@ -48,6 +77,7 @@ export interface RecipeFormData {
   servings?: number;
   tags?: string[];
   image_url?: string;
+  nutrition?: NutritionInfo;
 }
 
 export interface GeminiRecipeRequest {

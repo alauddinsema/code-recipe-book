@@ -236,4 +236,30 @@ export class FavoritesService {
       author_name: collection.profiles?.full_name
     })) as Collection[];
   }
+
+  // Update collection
+  static async updateCollection(
+    collectionId: string,
+    updates: { name?: string; description?: string; is_public?: boolean }
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('collections')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', collectionId);
+
+    if (error) throw error;
+  }
+
+  // Delete collection
+  static async deleteCollection(collectionId: string): Promise<void> {
+    const { error } = await supabase
+      .from('collections')
+      .delete()
+      .eq('id', collectionId);
+
+    if (error) throw error;
+  }
 }

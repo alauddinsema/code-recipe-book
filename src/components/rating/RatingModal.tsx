@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import StarRating from './StarRating';
+import MobileRatingInput from './MobileRatingInput';
 import { RatingService, type Review } from '../../services/ratings';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -144,18 +145,15 @@ const RatingModal: React.FC<RatingModalProps> = ({
             </p>
           </div>
 
-          {/* Star Rating */}
-          <div className="text-center space-y-3">
-            <StarRating
+          {/* Mobile-Optimized Rating Input */}
+          <div className="space-y-3">
+            <MobileRatingInput
               rating={rating}
               onRatingChange={setRating}
               size="xl"
-              interactive
-              className="justify-center"
+              disabled={loading}
+              showLabels={true}
             />
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
-              {getRatingText(rating)}
-            </p>
           </div>
 
           {/* Review Toggle */}

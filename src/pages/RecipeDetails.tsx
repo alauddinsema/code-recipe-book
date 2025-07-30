@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { RecipeDetail } from '../components';
+import { RecipeDetail, RecipeDetailSkeleton, SEOHead } from '../components';
 import { RecipeService } from '../services';
 import type { Recipe } from '../types';
 import { ROUTES } from '../utils/constants';
@@ -47,10 +47,15 @@ const RecipeDetails: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading recipe...</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Back Button Skeleton */}
+          <div className="mb-6">
+            <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          </div>
+
+          {/* Recipe Detail Skeleton */}
+          <RecipeDetailSkeleton />
         </div>
       </div>
     );
@@ -82,6 +87,28 @@ const RecipeDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <SEOHead
+        title={recipe.title}
+        description={recipe.description}
+        type="article"
+        author={recipe.author_name}
+        publishedTime={recipe.created_at}
+        modifiedTime={recipe.updated_at}
+        image={recipe.image_url}
+        keywords={recipe.tags?.join(', ') || `${recipe.category}, ${recipe.difficulty}, recipe, cooking, code`}
+        recipe={{
+          ingredients: recipe.ingredients,
+          instructions: recipe.steps,
+          prepTime: recipe.prep_time,
+          cookTime: recipe.cook_time,
+          servings: recipe.servings,
+          difficulty: recipe.difficulty,
+          category: recipe.category,
+          tags: recipe.tags,
+          averageRating: recipe.average_rating,
+          ratingCount: recipe.rating_count
+        }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="mb-6">

@@ -10,6 +10,19 @@ interface SEOHeadProps {
   author?: string;
   publishedTime?: string;
   modifiedTime?: string;
+  // Recipe-specific props
+  recipe?: {
+    ingredients?: string[];
+    instructions?: string[];
+    prepTime?: number;
+    cookTime?: number;
+    servings?: number;
+    difficulty?: string;
+    category?: string;
+    tags?: string[];
+    averageRating?: number;
+    ratingCount?: number;
+  };
 }
 
 const SEOHead: React.FC<SEOHeadProps> = ({
@@ -22,6 +35,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   author,
   publishedTime,
   modifiedTime,
+  recipe,
 }) => {
   const fullTitle = title === 'Code Recipe Book' ? title : `${title} | Code Recipe Book`;
   const fullImageUrl = image.startsWith('http') ? image : `${typeof window !== 'undefined' ? window.location.origin : ''}${image}`;
@@ -60,6 +74,49 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     updateMetaTag('og:type', type, true);
     updateMetaTag('og:site_name', 'Code Recipe Book', true);
 
+    // Recipe-specific Open Graph tags
+    if (recipe && type === 'article') {
+      if (recipe.ingredients) {
+        updateMetaTag('recipe:ingredient', recipe.ingredients.join(', '), true);
+      }
+      if (recipe.instructions) {
+        updateMetaTag('recipe:instruction', recipe.instructions.join(' '), true);
+      }
+      if (recipe.prepTime) {
+        updateMetaTag('recipe:prep_time', `PT${recipe.prepTime}M`, true);
+      }
+      if (recipe.cookTime) {
+        updateMetaTag('recipe:cook_time', `PT${recipe.cookTime}M`, true);
+      }
+      if (recipe.servings) {
+        updateMetaTag('recipe:serves', recipe.servings.toString(), true);
+      }
+      if (recipe.difficulty) {
+        updateMetaTag('recipe:difficulty', recipe.difficulty, true);
+      }
+      if (recipe.category) {
+        updateMetaTag('recipe:category', recipe.category, true);
+      }
+      if (recipe.tags) {
+        updateMetaTag('recipe:tag', recipe.tags.join(', '), true);
+      }
+
+      // Article-specific tags
+      if (author) {
+        updateMetaTag('article:author', author, true);
+      }
+      if (publishedTime) {
+        updateMetaTag('article:published_time', publishedTime, true);
+      }
+      if (modifiedTime) {
+        updateMetaTag('article:modified_time', modifiedTime, true);
+      }
+      updateMetaTag('article:section', 'Recipes', true);
+      if (recipe.tags) {
+        updateMetaTag('article:tag', recipe.tags.join(', '), true);
+      }
+    }
+
     // Twitter Card meta tags
     updateMetaTag('twitter:card', 'summary_large_image');
     updateMetaTag('twitter:title', fullTitle);
@@ -83,17 +140,19 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       document.head.appendChild(structuredData);
     }
 
-    structuredData.textContent = JSON.stringify({
+    const baseStructuredData = {
       "@context": "https://schema.org",
-      "@type": type === 'article' ? 'Recipe' : 'WebSite',
+      "@type": type === 'article' && recipe ? 'Recipe' : type === 'article' ? 'Article' : 'WebSite',
       "name": fullTitle,
       "description": description,
       "url": url,
       "image": fullImageUrl,
       "author": {
-        "@type": "Organization",
-        "name": "Code Recipe Book"
+        "@type": author ? "Person" : "Organization",
+        "name": author || "Code Recipe Book"
       },
+      ...(publishedTime && { "datePublished": publishedTime }),
+      ...(modifiedTime && { "dateModified": modifiedTime }),
       ...(type === 'website' && {
         "potentialAction": {
           "@type": "SearchAction",
@@ -101,9 +160,47 @@ const SEOHead: React.FC<SEOHeadProps> = ({
           "query-input": "required name=search_term_string"
         }
       })
-    });
+    };
 
-  }, [fullTitle, description, keywords, author, fullImageUrl, url, type, publishedTime, modifiedTime]);
+    // Add recipe-specific structured data
+    if (recipe && type === 'article') {
+      Object.assign(baseStructuredData, {
+        ...(recipe.prepTime && { "prepTime": `PT${recipe.prepTime}M` }),
+        ...(recipe.cookTime && { "cookTime": `PT${recipe.cookTime}M` }),
+        ...(recipe.prepTime && recipe.cookTime && {
+          "totalTime": `PT${recipe.prepTime + recipe.cookTime}M`
+        }),
+        ...(recipe.servings && { "recipeYield": recipe.servings.toString() }),
+        ...(recipe.category && { "recipeCategory": recipe.category }),
+        ...(recipe.difficulty && { "recipeDifficulty": recipe.difficulty }),
+        ...(recipe.ingredients && { "recipeIngredient": recipe.ingredients }),
+        ...(recipe.instructions && {
+          "recipeInstructions": recipe.instructions.map((step, index) => ({
+            "@type": "HowToStep",
+            "name": `Step ${index + 1}`,
+            "text": step
+          }))
+        }),
+        ...(recipe.tags && { "keywords": recipe.tags.join(', ') }),
+        ...(recipe.averageRating && recipe.ratingCount && {
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": recipe.averageRating,
+            "ratingCount": recipe.ratingCount,
+            "bestRating": 5,
+            "worstRating": 1
+          }
+        }),
+        "nutrition": {
+          "@type": "NutritionInformation",
+          ...(recipe.servings && { "servingSize": `${recipe.servings} servings` })
+        }
+      });
+    }
+
+    structuredData.textContent = JSON.stringify(baseStructuredData);
+
+  }, [fullTitle, description, keywords, author, fullImageUrl, url, type, publishedTime, modifiedTime, recipe]);
 
   return null; // This component doesn't render anything visible
 };

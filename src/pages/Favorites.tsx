@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { HeartIcon, FolderIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { RecipeCard, SEOHead } from '../components';
+import { RecipeCard, SEOHead, RecipeListSkeleton, SimplePullToRefresh } from '../components';
 import { FavoritesService, type Collection } from '../services/favorites';
 import { useAuth } from '../contexts/AuthContext';
 import type { Recipe } from '../types';
@@ -87,9 +87,19 @@ const Favorites: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            My Favorites
-          </h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              My Favorites
+            </h1>
+
+            <Link
+              to={ROUTES.COLLECTIONS}
+              className="btn-primary flex items-center space-x-2"
+            >
+              <FolderIcon className="w-5 h-5" />
+              <span>Manage Collections</span>
+            </Link>
+          </div>
           
           {/* Tabs */}
           <div className="border-b border-gray-200 dark:border-gray-700">
@@ -122,9 +132,7 @@ const Favorites: React.FC = () => {
 
         {/* Content */}
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-          </div>
+          <RecipeListSkeleton count={6} />
         ) : activeTab === 'favorites' ? (
           /* Favorite Recipes */
           favoriteRecipes.length === 0 ? (

@@ -7,6 +7,7 @@ import {
   TagIcon
 } from '@heroicons/react/24/outline';
 import { RECIPE_CATEGORIES, DIFFICULTY_LEVELS } from '../../utils/constants';
+import { useDebounce } from '../../hooks';
 
 export interface SearchFilters {
   query: string;
@@ -26,8 +27,11 @@ export interface SearchFilters {
 interface AdvancedSearchFiltersProps {
   onFiltersChange: (filters: SearchFilters) => void;
   onSearch: () => void;
+  onDebouncedSearch?: (filters: SearchFilters) => void;
   loading?: boolean;
   initialFilters?: Partial<SearchFilters>;
+  enableAutoSearch?: boolean;
+  searchDelay?: number;
 }
 
 const DIETARY_TAGS = [
@@ -49,8 +53,11 @@ const SORT_OPTIONS = [
 const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   onFiltersChange,
   onSearch,
+  onDebouncedSearch,
   loading = false,
-  initialFilters = {}
+  initialFilters = {},
+  enableAutoSearch = true,
+  searchDelay = 500
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
@@ -69,9 +76,20 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     ...initialFilters
   });
 
+  // Debounce the search query for auto-search
+  const debouncedQuery = useDebounce(filters.query, searchDelay);
+  const debouncedFilters = useDebounce(filters, searchDelay);
+
   useEffect(() => {
     onFiltersChange(filters);
   }, [filters, onFiltersChange]);
+
+  // Auto-search when debounced query or filters change
+  useEffect(() => {
+    if (enableAutoSearch && onDebouncedSearch && (debouncedQuery.trim() || hasActiveFilters())) {
+      onDebouncedSearch(debouncedFilters);
+    }
+  }, [debouncedQuery, debouncedFilters, enableAutoSearch, onDebouncedSearch]);
 
   const updateFilter = <K extends keyof SearchFilters>(
     key: K,
@@ -150,8 +168,14 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
             value={filters.query}
             onChange={(e) => updateFilter('query', e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && onSearch()}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
+          {/* Debounced search indicator */}
+          {enableAutoSearch && filters.query !== debouncedQuery && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
+            </div>
+          )}
         </div>
         
         <div className="flex gap-2">

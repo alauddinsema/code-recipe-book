@@ -2,17 +2,28 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Recipe } from '../../types';
 import { ROUTES, DIFFICULTY_LEVELS } from '../../utils/constants';
-import { RecipeModal } from '../ui';
+import { RecipeModal, LazyImage } from '../ui';
 import { FavoriteButton, CollectionModal } from '../favorites';
+import { XMarkIcon, ShareIcon } from '@heroicons/react/24/outline';
 import { RatingDisplay } from '../rating';
+import { ShareButton } from '../social';
+import { NutritionDisplay } from '../nutrition';
 
 interface RecipeCardProps {
   recipe: Recipe;
   onSaveRecipe?: (recipe: Recipe) => void;
   onFavoriteToggle?: (isFavorited: boolean) => void;
+  onRemoveFromCollection?: () => void;
+  showRemoveFromCollection?: boolean;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe, onFavoriteToggle }) => {
+const RecipeCard: React.FC<RecipeCardProps> = ({
+  recipe,
+  onSaveRecipe,
+  onFavoriteToggle,
+  onRemoveFromCollection,
+  showRemoveFromCollection = false
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const getDifficultyColor = (difficulty: string) => {
@@ -41,10 +52,10 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe, onFavorit
       {/* Recipe Image */}
       <div className="relative h-48 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 rounded-t-lg overflow-hidden">
         {recipe.image_url ? (
-          <img
+          <LazyImage
             src={recipe.image_url}
             alt={recipe.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+            className="w-full h-full group-hover:scale-105 transition-transform duration-200"
           />
         ) : (
           <div className="flex items-center justify-center h-full">
@@ -54,13 +65,35 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe, onFavorit
           </div>
         )}
         
-        {/* Top Right Corner - Difficulty Badge and Favorite Button */}
+        {/* Top Right Corner - Difficulty Badge and Action Buttons */}
         <div className="absolute top-3 right-3 flex items-center space-x-2">
           {recipe.difficulty && (
             <span className={`px-2 py-1 text-xs font-medium rounded-full ${getDifficultyColor(recipe.difficulty)}`}>
               {DIFFICULTY_LEVELS.find(d => d.value === recipe.difficulty)?.label || recipe.difficulty}
             </span>
           )}
+
+          {/* Remove from Collection Button */}
+          {showRemoveFromCollection && onRemoveFromCollection && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onRemoveFromCollection();
+              }}
+              className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-sm transition-colors"
+              title="Remove from collection"
+            >
+              <XMarkIcon className="w-4 h-4" />
+            </button>
+          )}
+
+          <ShareButton
+            recipe={recipe}
+            variant="icon"
+            size="sm"
+          />
+
           <FavoriteButton
             recipeId={recipe.id}
             size="sm"
@@ -148,6 +181,17 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe, onFavorit
                 +{recipe.tags.length - 3}
               </span>
             )}
+          </div>
+        )}
+
+        {/* Nutrition Summary */}
+        {recipe.nutrition && (
+          <div className="mb-3">
+            <NutritionDisplay
+              nutrition={recipe.nutrition}
+              servings={recipe.servings || 1}
+              compact={true}
+            />
           </div>
         )}
 

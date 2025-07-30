@@ -1,8 +1,66 @@
 import { supabase } from './supabase';
 import type { Database } from './supabase';
-import type { Recipe, RecipeFormData } from '../types';
+import type { Recipe, RecipeFormData, NutritionInfo } from '../types';
 
 type RecipeUpdate = Database['public']['Tables']['recipes']['Update'];
+
+// Helper functions for nutrition data conversion
+const nutritionToDbFields = (nutrition?: NutritionInfo) => {
+  if (!nutrition) return {};
+
+  return {
+    nutrition_calories: nutrition.calories || null,
+    nutrition_protein: nutrition.protein || null,
+    nutrition_carbohydrates: nutrition.carbohydrates || null,
+    nutrition_fat: nutrition.fat || null,
+    nutrition_fiber: nutrition.fiber || null,
+    nutrition_sugar: nutrition.sugar || null,
+    nutrition_sodium: nutrition.sodium || null,
+    nutrition_cholesterol: nutrition.cholesterol || null,
+    nutrition_saturated_fat: nutrition.saturated_fat || null,
+    nutrition_trans_fat: nutrition.trans_fat || null,
+    nutrition_vitamin_a: nutrition.vitamin_a || null,
+    nutrition_vitamin_c: nutrition.vitamin_c || null,
+    nutrition_calcium: nutrition.calcium || null,
+    nutrition_iron: nutrition.iron || null,
+    nutrition_potassium: nutrition.potassium || null,
+    nutrition_per_serving: nutrition.per_serving ?? true,
+  };
+};
+
+const dbFieldsToNutrition = (row: any): NutritionInfo | undefined => {
+  if (!row.nutrition_calories && !row.nutrition_protein && !row.nutrition_carbohydrates && !row.nutrition_fat) {
+    return undefined;
+  }
+
+  return {
+    calories: row.nutrition_calories || undefined,
+    protein: row.nutrition_protein || undefined,
+    carbohydrates: row.nutrition_carbohydrates || undefined,
+    fat: row.nutrition_fat || undefined,
+    fiber: row.nutrition_fiber || undefined,
+    sugar: row.nutrition_sugar || undefined,
+    sodium: row.nutrition_sodium || undefined,
+    cholesterol: row.nutrition_cholesterol || undefined,
+    saturated_fat: row.nutrition_saturated_fat || undefined,
+    trans_fat: row.nutrition_trans_fat || undefined,
+    vitamin_a: row.nutrition_vitamin_a || undefined,
+    vitamin_c: row.nutrition_vitamin_c || undefined,
+    calcium: row.nutrition_calcium || undefined,
+    iron: row.nutrition_iron || undefined,
+    potassium: row.nutrition_potassium || undefined,
+    per_serving: row.nutrition_per_serving ?? true,
+  };
+};
+
+const transformDbRowToRecipe = (row: any): Recipe => {
+  const nutrition = dbFieldsToNutrition(row);
+
+  return {
+    ...row,
+    nutrition,
+  } as Recipe;
+};
 
 export class RecipeService {
   // Get all recipes with pagination
@@ -24,7 +82,7 @@ export class RecipeService {
     const { data, error, count } = await query;
 
     if (error) throw error;
-    return { recipes: data as Recipe[], count };
+    return { recipes: data.map(transformDbRowToRecipe), count };
   }
 
   // Get recipe by ID
@@ -36,7 +94,7 @@ export class RecipeService {
       .single();
 
     if (error) throw error;
-    return data as Recipe;
+    return transformDbRowToRecipe(data);
   }
 
   // Get recipes by user
@@ -48,7 +106,7 @@ export class RecipeService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data as Recipe[];
+    return data.map(transformDbRowToRecipe);
   }
 
   // Get recipes by author (alias for getRecipesByUser with count)
@@ -60,7 +118,7 @@ export class RecipeService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return { recipes: data as Recipe[], count };
+    return { recipes: data.map(transformDbRowToRecipe), count };
   }
 
   // Create new recipe
@@ -83,6 +141,7 @@ export class RecipeService {
         author_name: userName || 'Anonymous',
         image_url: recipeData.image_url || null,
         tags: recipeData.tags || null,
+        ...nutritionToDbFields(recipeData.nutrition),
       };
 
       console.log('Creating recipe with data:', { ...insertData, ingredients: insertData.ingredients?.length, steps: insertData.steps?.length });
@@ -99,7 +158,7 @@ export class RecipeService {
       }
 
       console.log('Recipe created successfully:', data);
-      return data as Recipe;
+      return transformDbRowToRecipe(data);
     } catch (error) {
       console.error('Recipe creation error:', error);
       throw error;
@@ -108,15 +167,24 @@ export class RecipeService {
 
   // Update recipe
   static async updateRecipe(id: string, updates: Partial<RecipeFormData>): Promise<Recipe> {
+    // Convert nutrition data to database fields
+    const updateData = {
+      ...updates,
+      ...nutritionToDbFields(updates.nutrition),
+    };
+
+    // Remove the nutrition field since it's now converted to individual fields
+    delete updateData.nutrition;
+
     const { data, error } = await supabase
       .from('recipes')
-      .update(updates as RecipeUpdate)
+      .update(updateData as RecipeUpdate)
       .eq('id', id)
       .select()
       .single();
 
     if (error) throw error;
-    return data as Recipe;
+    return transformDbRowToRecipe(data);
   }
 
   // Delete recipe
@@ -142,6 +210,8 @@ export class RecipeService {
     sortBy?: 'newest' | 'oldest' | 'prep_time' | 'cook_time' | 'difficulty' | 'title' | 'rating' | 'popularity';
     sortOrder?: 'asc' | 'desc';
     searchIn?: ('title' | 'description' | 'ingredients' | 'code')[];
+    offset?: number;
+    limit?: number;
   }) {
     let supabaseQuery = supabase.from('recipes').select('*');
 
@@ -262,10 +332,17 @@ export class RecipeService {
         supabaseQuery = supabaseQuery.order('created_at', { ascending: false });
     }
 
+    // Apply pagination
+    if (filters?.offset !== undefined) {
+      supabaseQuery = supabaseQuery.range(filters.offset, filters.offset + (filters.limit || 20) - 1);
+    } else if (filters?.limit !== undefined) {
+      supabaseQuery = supabaseQuery.limit(filters.limit);
+    }
+
     const { data, error } = await supabaseQuery;
 
     if (error) throw error;
-    return data as Recipe[];
+    return data.map(transformDbRowToRecipe);
   }
 
   // Get recipe categories
