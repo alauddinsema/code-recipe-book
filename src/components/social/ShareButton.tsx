@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   ShareIcon, 
-  LinkIcon,
+
   XMarkIcon,
   ClipboardDocumentIcon
 } from '@heroicons/react/24/outline';
@@ -197,6 +197,7 @@ interface ShareModalProps {
 }
 
 const ShareModal: React.FC<ShareModalProps> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shareData,
   platforms,
   onClose,

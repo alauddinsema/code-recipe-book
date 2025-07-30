@@ -158,7 +158,7 @@ const InfiniteScrollContainer = <T,>({
             </p>
             {showRefreshButton && onRefresh && (
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={onRefresh}
                 className="flex items-center space-x-2 mx-auto"

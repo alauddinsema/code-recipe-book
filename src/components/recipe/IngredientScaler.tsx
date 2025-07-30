@@ -72,6 +72,7 @@ const IngredientScaler: React.FC<IngredientScalerProps> = ({
   };
 
   // Ingredient-specific weight conversions (cup to grams)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const ingredientWeights: { [key: string]: number } = {
     'flour': 120,
     'all-purpose flour': 120,

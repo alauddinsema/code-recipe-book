@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { DocumentArrowUpIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
-import { RecipeCard, RecipeSuggestion, SEOHead, RecipeListSkeleton, LazyRecipeCard, SimplePullToRefresh, InfiniteScrollContainer, ImportModal, ExportModal } from '../components';
+import { RecipeCard, RecipeSuggestion, SEOHead, LazyRecipeCard, SimplePullToRefresh, InfiniteScrollContainer, ImportModal, ExportModal } from '../components';
 import { AdvancedSearchFilters, type SearchFilters } from '../components/search';
 import { RecipeService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
@@ -42,7 +42,7 @@ const Home: React.FC = () => {
         return {
           items: recipes,
           hasMore: recipes.length === pageSize,
-          total: count
+          total: count || undefined
         };
       } else {
         // Perform advanced search with pagination
@@ -122,6 +122,7 @@ const Home: React.FC = () => {
 
   const handleAIRecipeGenerated = (aiRecipe: GeminiRecipeResponse) => {
     // Create a temporary recipe object to display
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const tempRecipe: Recipe = {
       id: `ai-${Date.now()}`,
       title: aiRecipe.title,
@@ -169,6 +170,7 @@ const Home: React.FC = () => {
         updated_at: undefined
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const savedRecipe = await RecipeService.createRecipe(recipeToSave, user!.id, user!.user_metadata?.full_name);
 
       // Refresh the list to show the saved recipe

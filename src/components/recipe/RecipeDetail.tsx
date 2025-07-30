@@ -21,6 +21,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
   const { user } = useAuth();
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [scaledIngredients, setScaledIngredients] = useState<string[]>([]);
   const [currentRecipe, setCurrentRecipe] = useState(recipe);
   const getDifficultyColor = (difficulty: string) => {
@@ -82,7 +83,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
         } : undefined
       };
 
-      await RecipeService.createRecipe(scaledRecipe);
+      await RecipeService.createRecipe(scaledRecipe, user.id, user.user_metadata?.full_name || user.email || 'Anonymous');
       alert('Scaled recipe saved successfully!');
     } catch (error) {
       console.error('Error saving scaled recipe:', error);

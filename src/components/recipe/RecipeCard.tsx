@@ -4,7 +4,7 @@ import type { Recipe } from '../../types';
 import { ROUTES, DIFFICULTY_LEVELS } from '../../utils/constants';
 import { RecipeModal } from '../ui';
 import { FavoriteButton, CollectionModal } from '../favorites';
-import { XMarkIcon, ShareIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { RatingDisplay } from '../rating';
 import { ShareButton } from '../social';
 import { NutritionDisplay } from '../nutrition';
