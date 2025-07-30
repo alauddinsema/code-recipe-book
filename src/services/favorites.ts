@@ -80,7 +80,7 @@ export class FavoritesService {
       .eq('user_id', userId);
 
     if (error) throw error;
-    return (data || []).map(item => item.recipe_id);
+    return (data || []).map((item: any) => item.recipe_id);
   }
 
   // Create a new collection
@@ -117,7 +117,7 @@ export class FavoritesService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return (data || []).map(collection => ({
+    return (data || []).map((collection: any) => ({
       ...collection,
       recipe_count: collection.collection_recipes?.[0]?.count || 0
     })) as Collection[];
@@ -230,7 +230,7 @@ export class FavoritesService {
       .limit(limit);
 
     if (error) throw error;
-    return (data || []).map(collection => ({
+    return (data || []).map((collection: any) => ({
       ...collection,
       recipe_count: collection.collection_recipes?.[0]?.count || 0,
       author_name: collection.profiles?.full_name

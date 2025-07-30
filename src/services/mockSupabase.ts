@@ -20,7 +20,7 @@ export const createMockSupabaseClient = () => {
         };
       }
     },
-    from: (table: string) => ({
+    from: (_table: string) => ({
       select: () => ({
         eq: () => ({
           single: async () => ({ data: null, error: new Error('Database service unavailable') })

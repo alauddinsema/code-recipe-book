@@ -210,7 +210,7 @@ export class ImageUploadService {
         return;
       }
 
-      const bucketExists = buckets?.some(bucket => bucket.name === this.BUCKET_NAME);
+      const bucketExists = buckets?.some((bucket: any) => bucket.name === this.BUCKET_NAME);
       
       if (!bucketExists) {
         const { error: createError } = await supabase.storage.createBucket(this.BUCKET_NAME, {

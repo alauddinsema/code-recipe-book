@@ -354,7 +354,7 @@ export class RecipeService {
 
     if (error) throw error;
     
-    const categories = [...new Set(data.map(item => item.category))];
+    const categories = [...new Set(data.map((item: any) => item.category))];
     return categories.filter(Boolean);
   }
 
@@ -367,8 +367,8 @@ export class RecipeService {
 
     if (error) throw error;
 
-    const allTags = data.flatMap(item => item.tags || []);
-    const tagCounts = allTags.reduce((acc, tag) => {
+    const allTags = data.flatMap((item: any) => item.tags || []);
+    const tagCounts = allTags.reduce((acc: any, tag: any) => {
       acc[tag] = (acc[tag] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);

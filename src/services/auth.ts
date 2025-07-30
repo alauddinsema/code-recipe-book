@@ -89,7 +89,7 @@ export class AuthService {
   // Listen to auth state changes with error handling
   static onAuthStateChange(callback: (user: User | null) => void) {
     try {
-      return supabase.auth.onAuthStateChange((_event, session) => {
+      return supabase.auth.onAuthStateChange((_event: any, session: any) => {
         callback(session?.user || null);
       });
     } catch (error) {

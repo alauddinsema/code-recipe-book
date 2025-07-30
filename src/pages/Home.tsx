@@ -293,7 +293,7 @@ const Home: React.FC = () => {
           loadingRef={loadingRef as React.RefObject<HTMLDivElement>}
           onRetry={retry}
           onRefresh={refresh}
-          renderItem={(recipe) => (
+          renderItem={(recipe: Recipe) => (
             <LazyRecipeCard
               fallback={
                 <div className="h-96 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
@@ -352,7 +352,7 @@ const Home: React.FC = () => {
       <ExportModal
         isOpen={showExportModal}
         onClose={() => setShowExportModal(false)}
-        recipes={recipes}
+        recipes={recipes as Recipe[]}
         title="Export Recipes"
       />
     </div>
