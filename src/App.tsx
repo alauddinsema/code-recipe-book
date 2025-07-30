@@ -9,6 +9,7 @@ import { ROUTES } from './utils/constants';
 // Lazy load pages for better performance
 const Home = React.lazy(() => import('./pages/Home'));
 const AddRecipe = React.lazy(() => import('./pages/AddRecipe'));
+const EditRecipe = React.lazy(() => import('./pages/EditRecipe'));
 const Profile = React.lazy(() => import('./pages/Profile'));
 const RecipeDetails = React.lazy(() => import('./pages/RecipeDetails'));
 const Favorites = React.lazy(() => import('./pages/Favorites'));
@@ -35,6 +36,7 @@ function App() {
                     <Routes>
                       <Route path={ROUTES.HOME} element={<Home />} />
                       <Route path={ROUTES.ADD_RECIPE} element={<AddRecipe />} />
+                      <Route path="/recipe/:id/edit" element={<EditRecipe />} />
                       <Route path={ROUTES.RECIPE_DETAILS} element={<RecipeDetails />} />
                       <Route path={ROUTES.PROFILE} element={<Profile />} />
                       <Route path={ROUTES.FAVORITES} element={<Favorites />} />

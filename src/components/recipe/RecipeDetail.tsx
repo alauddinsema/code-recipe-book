@@ -6,6 +6,7 @@ import CodeSnippet from './CodeSnippet';
 import InteractiveSteps from './InteractiveSteps';
 import TimerPanel from './TimerPanel';
 import IngredientScaler from './IngredientScaler';
+import RecipeActions from './RecipeActions';
 import { RatingDisplay, RatingModal, ReviewList, RatingStatistics } from '../rating';
 import { ExportModal } from '../export';
 import { ShareButton } from '../social';
@@ -164,8 +165,24 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
+            {/* Recipe Actions (Edit, Duplicate, Delete) */}
+            <RecipeActions
+              recipe={recipe}
+              onRecipeUpdated={(updatedRecipe) => setCurrentRecipe(updatedRecipe)}
+              onRecipeDeleted={() => {
+                // This will be handled by navigation in RecipeActions
+              }}
+              onRecipeDuplicated={() => {
+                // Navigation is handled in RecipeActions
+              }}
+              showLabels={true}
+              variant="buttons"
+              className="flex-shrink-0"
+            />
+
             {user && (
               <button
+                type="button"
                 onClick={() => setShowRatingModal(true)}
                 className="btn-primary text-sm px-4 py-2"
               >
@@ -178,6 +195,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
               className="text-sm px-4 py-2"
             />
             <button
+              type="button"
               onClick={() => setShowExportModal(true)}
               className="btn-outline text-sm px-4 py-2 flex items-center space-x-2"
             >

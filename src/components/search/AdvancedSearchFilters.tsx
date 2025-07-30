@@ -198,7 +198,10 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
         
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
+            title={showAdvanced ? "Hide advanced filters" : "Show advanced filters"}
+            aria-label={showAdvanced ? "Hide advanced filters" : "Show advanced filters"}
             className={`px-4 py-3 rounded-lg border transition-colors flex items-center space-x-2 ${
               showAdvanced || hasActiveFilters()
                 ? 'bg-primary-50 dark:bg-primary-900 border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300'
@@ -215,8 +218,11 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
           </button>
           
           <button
+            type="button"
             onClick={onSearch}
             disabled={loading}
+            title="Search recipes"
+            aria-label="Search recipes"
             className="btn-primary px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Searching...' : 'Search'}
@@ -237,6 +243,8 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               <select
                 value={filters.category}
                 onChange={(e) => updateFilter('category', e.target.value)}
+                title="Filter by recipe category"
+                aria-label="Filter by recipe category"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">All Categories</option>
@@ -254,6 +262,8 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               <select
                 value={filters.difficulty}
                 onChange={(e) => updateFilter('difficulty', e.target.value)}
+                title="Filter by recipe difficulty level"
+                aria-label="Filter by recipe difficulty level"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">All Levels</option>
@@ -272,6 +282,8 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                 <select
                   value={filters.sortBy}
                   onChange={(e) => updateFilter('sortBy', e.target.value as any)}
+                  title="Sort recipes by"
+                  aria-label="Sort recipes by"
                   className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   {SORT_OPTIONS.map(option => (
@@ -279,9 +291,11 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                   ))}
                 </select>
                 <button
+                  type="button"
                   onClick={() => updateFilter('sortOrder', filters.sortOrder === 'asc' ? 'desc' : 'asc')}
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
                   title={`Sort ${filters.sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
+                  aria-label={`Sort ${filters.sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
                 >
                   {filters.sortOrder === 'asc' ? '↑' : '↓'}
                 </button>
@@ -355,6 +369,8 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                   step="15"
                   value={filters.prepTimeRange[1]}
                   onChange={(e) => updateFilter('prepTimeRange', [filters.prepTimeRange[0], parseInt(e.target.value)])}
+                  title="Maximum prep time"
+                  aria-label="Maximum prep time"
                   className="w-full"
                 />
               </div>
@@ -444,7 +460,10 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
           {hasActiveFilters() && (
             <div className="flex justify-end">
               <button
+                type="button"
                 onClick={clearAllFilters}
+                title="Clear all filters"
+                aria-label="Clear all filters"
                 className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex items-center space-x-1"
               >
                 <XMarkIcon className="w-4 h-4" />
