@@ -4,6 +4,7 @@ export { default as Navbar } from './layout/Navbar';
 export { default as Footer } from './layout/Footer';
 export { default as BottomNavigation } from './layout/BottomNavigation';
 export { default as Button } from './ui/Button';
+export { default as AuthFallback } from './AuthFallback';
 export { default as ThemeToggle } from './ui/ThemeToggle';
 export { default as Loading } from './ui/Loading';
 export { default as RecipeModal } from './ui/RecipeModal';

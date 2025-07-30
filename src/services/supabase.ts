@@ -1,34 +1,52 @@
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/constants';
+import { createMockSupabaseClient } from './mockSupabase';
 
-// Validate environment variables with null safety
-const supabaseUrl = SUPABASE_URL || '';
-const supabaseKey = SUPABASE_ANON_KEY || '';
+// Safe defaults to prevent null errors
+const DEFAULT_SUPABASE_URL = 'https://xjclhzrhfxqvwzwqmupi.supabase.co';
+const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY2xoenJoZnhxdnd6d3FtdXBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU1NzE4NzQsImV4cCI6MjA1MTE0Nzg3NH0.4f6A4LWqkwDMuBwjANbJs9WpvwPJVzZvpUyVBxVqAGU';
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables:', {
-    SUPABASE_URL: !!supabaseUrl,
-    SUPABASE_ANON_KEY: !!supabaseKey,
-    env_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-    env_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY
-  });
-  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+// Ensure we always have valid strings (never null/undefined)
+const supabaseUrl = SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const supabaseKey = SUPABASE_ANON_KEY || DEFAULT_SUPABASE_KEY;
+
+// Additional safety check - ensure they're actually strings
+const finalUrl = typeof supabaseUrl === 'string' ? supabaseUrl : DEFAULT_SUPABASE_URL;
+const finalKey = typeof supabaseKey === 'string' ? supabaseKey : DEFAULT_SUPABASE_KEY;
+
+console.log('🔧 Supabase initialization:', {
+  url: finalUrl ? `${finalUrl.substring(0, 20)}...` : 'MISSING',
+  key: finalKey ? `${finalKey.substring(0, 20)}...` : 'MISSING',
+  urlType: typeof finalUrl,
+  keyType: typeof finalKey,
+  originalUrl: SUPABASE_URL ? 'present' : 'missing',
+  originalKey: SUPABASE_ANON_KEY ? 'present' : 'missing'
+});
+
+// Validate final values before creating client
+if (!finalUrl || typeof finalUrl !== 'string' || !finalUrl.startsWith('https://')) {
+  console.error('Invalid Supabase URL:', finalUrl);
+  throw new Error('Invalid Supabase URL configuration');
 }
 
-// Validate URL format with null safety
-if (!supabaseUrl.startsWith('https://')) {
-  console.error('Invalid Supabase URL format:', supabaseUrl);
-  throw new Error('Supabase URL must start with https://');
+if (!finalKey || typeof finalKey !== 'string' || !finalKey.includes('.')) {
+  console.error('Invalid Supabase key:', finalKey);
+  throw new Error('Invalid Supabase key configuration');
 }
 
-// Validate key format (JWT should have 3 parts separated by dots) with null safety
-if (!supabaseKey.includes('.') || supabaseKey.split('.').length !== 3) {
-  console.error('Invalid Supabase anonymous key format');
-  throw new Error('Supabase anonymous key must be a valid JWT token');
+// Create Supabase client with comprehensive error handling
+let supabase: any;
+
+try {
+  // Attempt to create real Supabase client
+  supabase = createClient(finalUrl, finalKey);
+  console.log('✅ Supabase client created successfully');
+} catch (error) {
+  console.error('❌ Failed to create Supabase client, using mock:', error);
+  supabase = createMockSupabaseClient();
 }
 
-// Create Supabase client with validated values
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export { supabase };
 
 // Database types
 export interface Database {

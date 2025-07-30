@@ -3,8 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
-import { Layout, ErrorBoundary, Loading } from './components';
-import AuthFallback from './components/AuthFallback';
+import { Layout, ErrorBoundary, Loading, AuthFallback } from './components';
 import { ROUTES } from './utils/constants';
 
 // Lazy load pages for better performance
