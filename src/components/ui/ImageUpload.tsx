@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { PhotoIcon, XMarkIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { ImageUploadService } from '../../services/imageUpload';
 import { useAuth } from '../../contexts/AuthContext';
 

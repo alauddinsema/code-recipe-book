@@ -62,7 +62,7 @@ export function useDebouncedSearch<T>(
     }
   };
 
-  const triggerSearch = (query: string, ...args: any[]) => {
+  const triggerSearch = (query: string, ..._args: any[]) => {
     setSearchQuery(query);
   };
 

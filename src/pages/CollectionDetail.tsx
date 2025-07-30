@@ -6,8 +6,7 @@ import {
   TrashIcon,
   EyeIcon,
   EyeSlashIcon,
-  ArrowLeftIcon,
-  PlusIcon
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline';
 import {
   SEOHead,
@@ -20,7 +19,7 @@ import {
 import { FavoritesService, type Collection } from '../services/favorites';
 import { useAuth } from '../contexts/AuthContext';
 import { useInfiniteScroll } from '../hooks';
-import type { Recipe } from '../types';
+
 import { ROUTES } from '../utils/constants';
 import toast from 'react-hot-toast';
 
@@ -364,7 +363,7 @@ const CollectionDetail: React.FC = () => {
           loading={recipesLoading}
           hasMore={hasMore}
           error={error}
-          loadingRef={loadingRef}
+          loadingRef={loadingRef as React.RefObject<HTMLDivElement>}
           onRetry={retry}
           onRefresh={refreshRecipes}
           renderItem={(recipe) => (

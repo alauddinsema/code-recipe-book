@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { HeartIcon, FolderIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { RecipeCard, SEOHead, RecipeListSkeleton, SimplePullToRefresh } from '../components';
+import { RecipeCard, SEOHead, RecipeListSkeleton } from '../components';
 import { FavoritesService, type Collection } from '../services/favorites';
 import { useAuth } from '../contexts/AuthContext';
 import type { Recipe } from '../types';

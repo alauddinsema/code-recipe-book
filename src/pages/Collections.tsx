@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   FolderIcon,
   PlusIcon,
-  EyeIcon,
-  EyeSlashIcon,
   MagnifyingGlassIcon,
-  FunnelIcon,
   DocumentArrowUpIcon,
   DocumentArrowDownIcon
 } from '@heroicons/react/24/outline';
@@ -113,6 +110,7 @@ const Collections: React.FC = () => {
     (collection.description && collection.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',

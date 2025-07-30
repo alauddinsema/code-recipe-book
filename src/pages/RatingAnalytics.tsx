@@ -11,11 +11,10 @@ import {
   SEOHead, 
   Loading, 
   RecipeCard, 
-  RatingStatistics, 
-  RatingSummary 
+
 } from '../components';
 import { RatingService, type Rating, type Review } from '../services/ratings';
-import { RecipeService } from '../services';
+
 import { useAuth } from '../contexts/AuthContext';
 import type { Recipe } from '../types';
 import { ROUTES } from '../utils/constants';

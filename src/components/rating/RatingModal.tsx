@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import StarRating from './StarRating';
 import MobileRatingInput from './MobileRatingInput';
 import { RatingService, type Review } from '../../services/ratings';
 import { useAuth } from '../../contexts/AuthContext';
@@ -104,6 +103,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
     onClose();
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getRatingText = (rating: number) => {
     switch (rating) {
       case 1: return 'Poor';

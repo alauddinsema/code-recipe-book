@@ -27,7 +27,7 @@ const NutritionDisplay: React.FC<NutritionDisplayProps> = ({
   if (compact) {
     return (
       <div className={`flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400 ${className}`}>
-        {mainNutrients.map((nutrient, index) => (
+        {mainNutrients.map((nutrient, _index) => (
           <span key={nutrient.label} className="flex items-center space-x-1">
             <span className="font-medium">{nutrient.value}{nutrient.unit}</span>
             <span className="text-xs">{nutrient.label}</span>

@@ -53,6 +53,7 @@ const MobileInput: React.FC<MobileInputProps> = ({
   containerClassName = '',
   showCharacterCount = false,
   formatValue,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   validateOnBlur = false,
   clearable = false,
   leftIcon,

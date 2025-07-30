@@ -313,7 +313,7 @@ const Home: React.FC = () => {
           loading={loading}
           hasMore={hasMore}
           error={error}
-          loadingRef={loadingRef}
+          loadingRef={loadingRef as React.RefObject<HTMLDivElement>}
           onRetry={retry}
           onRefresh={refresh}
           renderItem={(recipe) => (

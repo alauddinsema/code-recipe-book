@@ -189,7 +189,7 @@ export class ImportExportService {
 
     pdf.setFontSize(12);
     pdf.setFont('helvetica', 'normal');
-    recipe.ingredients.forEach((ingredient, index) => {
+    recipe.ingredients.forEach((ingredient, _index) => {
       if (yPosition > 250) {
         pdf.addPage();
         yPosition = 20;
@@ -297,6 +297,7 @@ export class ImportExportService {
     // Add each recipe
     for (let i = 0; i < recipes.length; i++) {
       pdf.addPage();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const recipeBlob = await this.exportToPDF(recipes[i]);
       // Note: This is a simplified approach. In a real implementation,
       // you'd want to properly merge the PDFs or recreate the content
