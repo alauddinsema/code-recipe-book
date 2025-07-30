@@ -66,20 +66,32 @@ export class RecipeService {
 
   // Create new recipe
   static async createRecipe(recipeData: RecipeFormData, userId: string, userName?: string): Promise<Recipe> {
-    const insertData: RecipeInsert = {
-      ...recipeData,
-      author_id: userId,
-      author_name: userName || 'Anonymous',
-    };
+    try {
+      const insertData: RecipeInsert = {
+        ...recipeData,
+        author_id: userId,
+        author_name: userName || 'Anonymous',
+      };
 
-    const { data, error } = await supabase
-      .from('recipes')
-      .insert(insertData)
-      .select()
-      .single();
+      console.log('Creating recipe with data:', { ...insertData, ingredients: insertData.ingredients?.length, steps: insertData.steps?.length });
 
-    if (error) throw error;
-    return data as Recipe;
+      const { data, error } = await supabase
+        .from('recipes')
+        .insert(insertData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(`Failed to create recipe: ${error.message}`);
+      }
+
+      console.log('Recipe created successfully:', data);
+      return data as Recipe;
+    } catch (error) {
+      console.error('Recipe creation error:', error);
+      throw error;
+    }
   }
 
   // Update recipe
