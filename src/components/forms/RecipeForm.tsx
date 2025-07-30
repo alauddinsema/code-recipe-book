@@ -70,15 +70,15 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       newErrors.steps = 'At least one step is required';
     }
 
-    if (formData.prep_time !== null && formData.prep_time < 0) {
+    if (formData.prep_time !== undefined && formData.prep_time < 0) {
       newErrors.prep_time = 'Prep time must be positive';
     }
 
-    if (formData.cook_time !== null && formData.cook_time < 0) {
+    if (formData.cook_time !== undefined && formData.cook_time < 0) {
       newErrors.cook_time = 'Cook time must be positive';
     }
 
-    if (formData.servings !== null && formData.servings < 1) {
+    if (formData.servings !== undefined && formData.servings < 1) {
       newErrors.servings = 'Servings must be at least 1';
     }
 
