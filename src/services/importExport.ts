@@ -297,10 +297,9 @@ export class ImportExportService {
     // Add each recipe
     for (let i = 0; i < recipes.length; i++) {
       pdf.addPage();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const recipeBlob = await this.exportToPDF(recipes[i]);
       // Note: This is a simplified approach. In a real implementation,
       // you'd want to properly merge the PDFs or recreate the content
+      await this.exportToPDF(recipes[i]);
     }
 
     return pdf.output('blob');

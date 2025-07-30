@@ -21,8 +21,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
   const { user } = useAuth();
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [scaledIngredients, setScaledIngredients] = useState<string[]>([]);
+
   const [currentRecipe, setCurrentRecipe] = useState(recipe);
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -207,7 +206,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
           <IngredientScaler
             ingredients={recipe.ingredients}
             originalServings={recipe.servings || 4}
-            onScaledIngredientsChange={setScaledIngredients}
+            onScaledIngredientsChange={() => {}}
             onSaveScaledRecipe={handleSaveScaledRecipe}
           />
 

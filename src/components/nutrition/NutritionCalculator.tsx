@@ -20,8 +20,7 @@ const NutritionCalculator: React.FC<NutritionCalculatorProps> = ({
 }) => {
   const [nutrition, setNutrition] = useState<NutritionInfo | null>(null);
   const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [showDetails, setShowDetails] = useState(false);
+
   const [recognizedIngredients, setRecognizedIngredients] = useState<string[]>([]);
   const [unrecognizedIngredients, setUnrecognizedIngredients] = useState<string[]>([]);
 

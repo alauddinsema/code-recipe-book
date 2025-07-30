@@ -24,7 +24,7 @@ interface MobileInputProps {
   containerClassName?: string;
   showCharacterCount?: boolean;
   formatValue?: (value: string) => string;
-  validateOnBlur?: boolean;
+
   clearable?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -53,8 +53,7 @@ const MobileInput: React.FC<MobileInputProps> = ({
   containerClassName = '',
   showCharacterCount = false,
   formatValue,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  validateOnBlur = false,
+
   clearable = false,
   leftIcon,
   rightIcon

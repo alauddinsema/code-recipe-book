@@ -126,7 +126,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
 
         {showShareModal && (
           <ShareModal
-            shareData={shareData}
             platforms={platforms}
             onClose={() => setShowShareModal(false)}
             onPlatformShare={handlePlatformShare}
@@ -150,7 +149,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
 
         {showShareModal && (
           <ShareModal
-            shareData={shareData}
             platforms={platforms}
             onClose={() => setShowShareModal(false)}
             onPlatformShare={handlePlatformShare}
@@ -174,7 +172,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
 
       {showShareModal && (
         <ShareModal
-          shareData={shareData}
           platforms={platforms}
           onClose={() => setShowShareModal(false)}
           onPlatformShare={handlePlatformShare}
@@ -188,7 +185,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
 
 // Share Modal Component
 interface ShareModalProps {
-  shareData: ShareData;
   platforms: string[];
   onClose: () => void;
   onPlatformShare: (platform: string) => void;
@@ -197,8 +193,6 @@ interface ShareModalProps {
 }
 
 const ShareModal: React.FC<ShareModalProps> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  shareData,
   platforms,
   onClose,
   onPlatformShare,

@@ -6,7 +6,7 @@ import { AdvancedSearchFilters, type SearchFilters } from '../components/search'
 import { RecipeService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
 import { useInfiniteScrollWithFilters } from '../hooks';
-import type { Recipe, GeminiRecipeResponse } from '../types';
+import type { Recipe } from '../types';
 import { ROUTES } from '../utils/constants';
 import toast from 'react-hot-toast';
 
@@ -120,30 +120,8 @@ const Home: React.FC = () => {
            filters.servingsRange[1] < 12;
   };
 
-  const handleAIRecipeGenerated = (aiRecipe: GeminiRecipeResponse) => {
+  const handleAIRecipeGenerated = () => {
     // Create a temporary recipe object to display
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const tempRecipe: Recipe = {
-      id: `ai-${Date.now()}`,
-      title: aiRecipe.title,
-      description: aiRecipe.description,
-      ingredients: aiRecipe.ingredients,
-      steps: aiRecipe.steps,
-      code_snippet: aiRecipe.code_snippet || undefined,
-      language: aiRecipe.language || undefined,
-      difficulty: 'medium',
-      category: undefined,
-      prep_time: aiRecipe.prep_time || undefined,
-      cook_time: aiRecipe.cook_time || undefined,
-      servings: aiRecipe.servings || undefined,
-      author_id: user?.id || '',
-      author_name: user?.user_metadata?.full_name || 'AI Generated',
-      image_url: undefined,
-      tags: [],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
     // Add the AI-generated recipe to the top of the list
     // Note: This is a temporary addition, will be replaced when saved
     setShowAISuggestion(false);
@@ -170,8 +148,7 @@ const Home: React.FC = () => {
         updated_at: undefined
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const savedRecipe = await RecipeService.createRecipe(recipeToSave, user!.id, user!.user_metadata?.full_name);
+      await RecipeService.createRecipe(recipeToSave, user!.id, user!.user_metadata?.full_name);
 
       // Refresh the list to show the saved recipe
       await refresh();

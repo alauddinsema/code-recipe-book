@@ -103,17 +103,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
     onClose();
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const getRatingText = (rating: number) => {
-    switch (rating) {
-      case 1: return 'Poor';
-      case 2: return 'Fair';
-      case 3: return 'Good';
-      case 4: return 'Very Good';
-      case 5: return 'Excellent';
-      default: return 'Select a rating';
-    }
-  };
+
 
   if (!isOpen) return null;
 

@@ -71,29 +71,7 @@ const IngredientScaler: React.FC<IngredientScalerProps> = ({
     'kilograms': 1000
   };
 
-  // Ingredient-specific weight conversions (cup to grams)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const ingredientWeights: { [key: string]: number } = {
-    'flour': 120,
-    'all-purpose flour': 120,
-    'bread flour': 120,
-    'cake flour': 100,
-    'sugar': 200,
-    'brown sugar': 220,
-    'powdered sugar': 120,
-    'butter': 227,
-    'rice': 185,
-    'oats': 80,
-    'milk': 240,
-    'water': 240,
-    'oil': 220,
-    'honey': 340,
-    'cocoa powder': 85,
-    'baking powder': 4,
-    'baking soda': 4,
-    'salt': 300,
-    'vanilla extract': 240
-  };
+
 
   // Ingredients that don't scale well or need special handling
   const scalingWarnings: { [key: string]: string } = {
