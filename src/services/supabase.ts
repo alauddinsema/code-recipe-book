@@ -1,28 +1,34 @@
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/constants';
 
-// Validate environment variables
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+// Validate environment variables with null safety
+const supabaseUrl = SUPABASE_URL || '';
+const supabaseKey = SUPABASE_ANON_KEY || '';
+
+if (!supabaseUrl || !supabaseKey) {
   console.error('Missing Supabase environment variables:', {
-    SUPABASE_URL: !!SUPABASE_URL,
-    SUPABASE_ANON_KEY: !!SUPABASE_ANON_KEY
+    SUPABASE_URL: !!supabaseUrl,
+    SUPABASE_ANON_KEY: !!supabaseKey,
+    env_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+    env_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY
   });
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 
-// Validate URL format
-if (!SUPABASE_URL.startsWith('https://')) {
-  console.error('Invalid Supabase URL format:', SUPABASE_URL);
+// Validate URL format with null safety
+if (!supabaseUrl.startsWith('https://')) {
+  console.error('Invalid Supabase URL format:', supabaseUrl);
   throw new Error('Supabase URL must start with https://');
 }
 
-// Validate key format (JWT should have 3 parts separated by dots)
-if (!SUPABASE_ANON_KEY.includes('.') || SUPABASE_ANON_KEY.split('.').length !== 3) {
+// Validate key format (JWT should have 3 parts separated by dots) with null safety
+if (!supabaseKey.includes('.') || supabaseKey.split('.').length !== 3) {
   console.error('Invalid Supabase anonymous key format');
   throw new Error('Supabase anonymous key must be a valid JWT token');
 }
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Create Supabase client with validated values
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Database types
 export interface Database {

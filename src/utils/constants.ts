@@ -7,14 +7,18 @@ export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://xjclhz
 export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY2xoenJoZnhxdnd6d3FtdXBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU1NzE4NzQsImV4cCI6MjA1MTE0Nzg3NH0.4f6A4LWqkwDMuBwjANbJs9WpvwPJVzZvpUyVBxVqAGU';
 export const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyA06qwc7AT0Ae7wvxKK20MSeKUiE4MI9Dw';
 
-// Debug logging for environment variables (only in development)
-if (import.meta.env.DEV) {
-  console.log('Environment variables loaded:', {
-    SUPABASE_URL: SUPABASE_URL ? `${SUPABASE_URL.substring(0, 20)}...` : 'undefined',
-    SUPABASE_ANON_KEY: SUPABASE_ANON_KEY ? `${SUPABASE_ANON_KEY.substring(0, 20)}...` : 'undefined',
-    GEMINI_API_KEY: GEMINI_API_KEY ? `${GEMINI_API_KEY.substring(0, 20)}...` : 'undefined'
-  });
-}
+// Debug logging for environment variables (in development AND production for debugging)
+console.log('🔧 Environment variables loaded:', {
+  SUPABASE_URL: SUPABASE_URL ? `${SUPABASE_URL.substring(0, 20)}...` : 'undefined',
+  SUPABASE_ANON_KEY: SUPABASE_ANON_KEY ? `${SUPABASE_ANON_KEY.substring(0, 20)}...` : 'undefined',
+  GEMINI_API_KEY: GEMINI_API_KEY ? `${GEMINI_API_KEY.substring(0, 20)}...` : 'undefined',
+  raw_env_vars: {
+    VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+    VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'present' : 'missing',
+    VITE_GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY ? 'present' : 'missing'
+  },
+  build_time: new Date().toISOString()
+});
 
 // Routes
 export const ROUTES = {
