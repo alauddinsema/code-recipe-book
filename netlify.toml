@@ -1,6 +1,6 @@
 [build]
-  # Build command with legacy peer deps to fix React 19 compatibility
-  command = "npm install --legacy-peer-deps && npm run build"
+  # Build command
+  command = "npm run build"
 
   # Directory to publish (Vite builds to 'dist' by default)
   publish = "dist"
