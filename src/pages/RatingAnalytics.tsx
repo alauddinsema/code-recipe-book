@@ -326,7 +326,7 @@ const RatingAnalytics: React.FC = () => {
                   {rating.recipe.description}
                 </p>
                 <Link
-                  to={`${ROUTES.RECIPE_DETAIL}/${rating.recipe.id}`}
+                  to={`${ROUTES.RECIPE_DETAILS}/${rating.recipe.id}`}
                   className="inline-block mt-3 text-sm text-primary-600 dark:text-primary-400 hover:underline"
                 >
                   View Recipe →

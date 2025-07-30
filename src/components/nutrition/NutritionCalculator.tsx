@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CalculatorIcon, RefreshIcon } from '@heroicons/react/24/outline';
+import { CalculatorIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import type { NutritionInfo } from '../../types';
 import { NutritionService } from '../../services/nutrition';
 import { Button } from '../ui';
@@ -89,7 +89,7 @@ const NutritionCalculator: React.FC<NutritionCalculatorProps> = ({
           loading={loading}
           className="flex items-center space-x-2"
         >
-          <RefreshIcon className="w-4 h-4" />
+          <ArrowPathIcon className="w-4 h-4" />
           <span>Recalculate</span>
         </Button>
       </div>

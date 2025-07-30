@@ -7,7 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '../ui';
 import { ImportExportService } from '../../services/importExport';
-import { FavoritesService, type Collection } from '../../services/favorites';
+import { type Collection } from '../../services/favorites';
 import type { Recipe } from '../../types';
 import toast from 'react-hot-toast';
 

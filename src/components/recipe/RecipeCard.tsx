@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Recipe } from '../../types';
 import { ROUTES, DIFFICULTY_LEVELS } from '../../utils/constants';
-import { RecipeModal, LazyImage } from '../ui';
+import { RecipeModal } from '../ui';
 import { FavoriteButton, CollectionModal } from '../favorites';
 import { XMarkIcon, ShareIcon } from '@heroicons/react/24/outline';
 import { RatingDisplay } from '../rating';
@@ -52,10 +52,11 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       {/* Recipe Image */}
       <div className="relative h-48 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 rounded-t-lg overflow-hidden">
         {recipe.image_url ? (
-          <LazyImage
+          <img
             src={recipe.image_url}
             alt={recipe.title}
-            className="w-full h-full group-hover:scale-105 transition-transform duration-200"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+            loading="lazy"
           />
         ) : (
           <div className="flex items-center justify-center h-full">

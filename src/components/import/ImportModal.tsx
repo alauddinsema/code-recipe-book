@@ -7,7 +7,7 @@ import {
   ExclamationTriangleIcon,
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
-import { Button, MobileInput } from '../ui';
+import { Button } from '../ui';
 import { ImportExportService, type ImportResult } from '../../services/importExport';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -309,12 +309,13 @@ const ImportModal: React.FC<ImportModalProps> = ({
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Recipe URL
                     </label>
-                    <MobileInput
+                    <input
                       type="url"
                       value={importUrl}
                       onChange={(e) => setImportUrl(e.target.value)}
                       placeholder="https://example.com/recipe"
                       disabled={importing}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Loading } from './Loading';
-import { Button } from './Button';
+import Loading from './Loading';
+import Button from './Button';
 import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 interface InfiniteScrollContainerProps<T> {

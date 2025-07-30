@@ -431,9 +431,9 @@ const IngredientScaler: React.FC<IngredientScalerProps> = ({
                 <span className="text-gray-700 dark:text-gray-300 flex-1">
                   {showScaled && scaleFactor !== 1 ? (item.scaled || item.original) : item.original}
                 </span>
-                {showScaled && scaleFactor !== 1 && item.amount && (
+                {showScaled && scaleFactor !== 1 && 'amount' in item && item.amount && (
                   <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-                    was: {formatAmount(item.amount)}{item.unit ? ` ${item.unit}` : ''}
+                    was: {formatAmount(item.amount)}{'unit' in item && item.unit ? ` ${item.unit}` : ''}
                   </span>
                 )}
               </li>

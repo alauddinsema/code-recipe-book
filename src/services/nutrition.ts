@@ -237,7 +237,7 @@ export class NutritionService {
     // Scale nutrition values based on actual weight
     Object.entries(nutritionPer100g).forEach(([key, value]) => {
       if (typeof value === 'number') {
-        nutrition[key as keyof NutritionInfo] = Math.round((value * factor) * 100) / 100;
+        (nutrition as any)[key] = Math.round((value * factor) * 100) / 100;
       }
     });
     

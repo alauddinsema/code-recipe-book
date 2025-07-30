@@ -11,6 +11,7 @@ import { ExportModal } from '../export';
 import { ShareButton } from '../social';
 import { NutritionDisplay, NutritionCalculator } from '../nutrition';
 import { useAuth } from '../../contexts/AuthContext';
+import { RecipeService } from '../../services/recipes';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -62,7 +63,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
         title: `${recipe.title} (${targetServings} servings)`,
         description: `${recipe.description}\n\nScaled from original ${recipe.servings || 1} servings to ${targetServings} servings.`,
         ingredients: scaledIngredients,
-        instructions: recipe.instructions,
+        steps: recipe.steps,
         prep_time: recipe.prep_time,
         cook_time: recipe.cook_time,
         servings: targetServings,

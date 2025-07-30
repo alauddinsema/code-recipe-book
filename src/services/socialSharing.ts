@@ -192,7 +192,7 @@ export class SocialSharingService {
       'og:url': url,
       'og:image': image,
       'og:site_name': 'Code Recipe Book',
-      'article:author': recipe.author_name,
+      'article:author': recipe.author_name || '',
       'article:published_time': recipe.created_at,
       'article:modified_time': recipe.updated_at,
       'article:section': 'Recipes',

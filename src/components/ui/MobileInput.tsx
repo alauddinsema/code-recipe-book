@@ -66,20 +66,28 @@ const MobileInput: React.FC<MobileInputProps> = ({
   const inputType = type === 'password' && showPassword ? 'text' : type;
 
   // Auto-detect input mode based on type
-  const detectedInputMode = inputMode || {
+  const inputModeMap: Record<string, string> = {
     email: 'email',
     tel: 'tel',
     url: 'url',
     number: 'numeric',
-    search: 'search'
-  }[type] || 'text';
+    search: 'search',
+    text: 'text',
+    password: 'text'
+  };
+  const detectedInputMode = inputMode || inputModeMap[type] || 'text';
 
   // Auto-detect enter key hint
-  const detectedEnterKeyHint = enterKeyHint || {
+  const enterKeyHintMap: Record<string, string> = {
     email: 'next',
     password: 'done',
-    search: 'search'
-  }[type] || 'done';
+    search: 'search',
+    text: 'done',
+    tel: 'done',
+    url: 'done',
+    number: 'done'
+  };
+  const detectedEnterKeyHint = enterKeyHint || enterKeyHintMap[type] || 'done';
 
   useEffect(() => {
     if (autoFocus && inputRef.current) {
@@ -152,8 +160,8 @@ const MobileInput: React.FC<MobileInputProps> = ({
           maxLength={maxLength}
           minLength={minLength}
           pattern={pattern}
-          inputMode={detectedInputMode}
-          enterKeyHint={detectedEnterKeyHint}
+          inputMode={detectedInputMode as any}
+          enterKeyHint={detectedEnterKeyHint as any}
           className={`
             w-full px-4 py-3 text-base
             ${leftIcon ? 'pl-10' : ''}

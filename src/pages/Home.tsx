@@ -38,11 +38,11 @@ const Home: React.FC = () => {
 
       if (!filters.query.trim() && !hasActiveFiltersForSearch(filters)) {
         // No search query or filters, load all recipes
-        const { recipes, total } = await RecipeService.getRecipes(offset, pageSize);
+        const { recipes, count } = await RecipeService.getRecipes(offset, pageSize);
         return {
           items: recipes,
           hasMore: recipes.length === pageSize,
-          total
+          total: count
         };
       } else {
         // Perform advanced search with pagination
@@ -144,7 +144,7 @@ const Home: React.FC = () => {
     };
 
     // Add the AI-generated recipe to the top of the list
-    setRecipes(prev => [tempRecipe, ...prev]);
+    // Note: This is a temporary addition, will be replaced when saved
     setShowAISuggestion(false);
 
     // Scroll to top to show the new recipe
@@ -171,9 +171,8 @@ const Home: React.FC = () => {
 
       const savedRecipe = await RecipeService.createRecipe(recipeToSave, user!.id, user!.user_metadata?.full_name);
 
-      // Remove the AI recipe from the list and add the saved one
-      setRecipes(prev => prev.filter(r => r.id !== recipe.id));
-      setRecipes(prev => [savedRecipe, ...prev]);
+      // Refresh the list to show the saved recipe
+      await refresh();
 
       toast.success('Recipe saved successfully!');
     } catch (error) {
@@ -363,7 +362,7 @@ const Home: React.FC = () => {
         onImportComplete={(result) => {
           // Refresh the recipes list after import
           if (result.success.length > 0) {
-            refetch();
+            refresh();
           }
         }}
       />
