@@ -8,6 +8,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { RatingDisplay } from '../rating';
 import { ShareButton } from '../social';
 import { NutritionDisplay } from '../nutrition';
+import { HighlightedText } from '../search';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -15,6 +16,8 @@ interface RecipeCardProps {
   onFavoriteToggle?: (isFavorited: boolean) => void;
   onRemoveFromCollection?: () => void;
   showRemoveFromCollection?: boolean;
+  searchQuery?: string;
+  highlightSearchTerms?: boolean;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({
@@ -22,7 +25,9 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onSaveRecipe,
   onFavoriteToggle,
   onRemoveFromCollection,
-  showRemoveFromCollection = false
+  showRemoveFromCollection = false,
+  searchQuery = '',
+  highlightSearchTerms = false
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
@@ -119,12 +124,30 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       <div className="p-4">
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-200">
-            {recipe.title}
+            {highlightSearchTerms && searchQuery ? (
+              <HighlightedText
+                text={recipe.title}
+                searchTerm={searchQuery}
+                multipleTerms={true}
+                highlightClassName="bg-yellow-200 dark:bg-yellow-800 text-yellow-900 dark:text-yellow-100 px-1 rounded"
+              />
+            ) : (
+              recipe.title
+            )}
           </h3>
         </div>
 
         <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
-          {recipe.description}
+          {highlightSearchTerms && searchQuery ? (
+            <HighlightedText
+              text={recipe.description}
+              searchTerm={searchQuery}
+              multipleTerms={true}
+              highlightClassName="bg-yellow-200 dark:bg-yellow-800 text-yellow-900 dark:text-yellow-100 px-1 rounded"
+            />
+          ) : (
+            recipe.description
+          )}
         </p>
 
         {/* Rating Display */}

@@ -302,6 +302,8 @@ const Home: React.FC = () => {
               <RecipeCard
                 recipe={recipe}
                 onSaveRecipe={handleSaveRecipe}
+                searchQuery={searchFilters.query}
+                highlightSearchTerms={!!searchFilters.query.trim()}
               />
             </LazyRecipeCard>
           )}

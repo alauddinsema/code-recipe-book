@@ -8,6 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { RECIPE_CATEGORIES, DIFFICULTY_LEVELS } from '../../utils/constants';
 import { useDebounce } from '../../hooks';
+import SearchSuggestions from './SearchSuggestions';
 
 export interface SearchFilters {
   query: string;
@@ -60,6 +61,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   searchDelay = 500
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
     category: '',
@@ -168,6 +170,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
             value={filters.query}
             onChange={(e) => updateFilter('query', e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && onSearch()}
+            onFocus={() => setShowSuggestions(true)}
             className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
           {/* Debounced search indicator */}
@@ -176,6 +179,21 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
             </div>
           )}
+
+          {/* Search Suggestions */}
+          <SearchSuggestions
+            query={filters.query}
+            isVisible={showSuggestions}
+            onSuggestionSelect={(suggestion) => {
+              updateFilter('query', suggestion);
+              setShowSuggestions(false);
+              if (enableAutoSearch) {
+                // Trigger search after a short delay to allow state update
+                setTimeout(() => onSearch(), 100);
+              }
+            }}
+            onClose={() => setShowSuggestions(false)}
+          />
         </div>
         
         <div className="flex gap-2">
