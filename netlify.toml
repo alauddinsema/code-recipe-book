@@ -1,6 +1,6 @@
 [build]
-  # Build command
-  command = "npm run build"
+  # Build command - install all deps including devDependencies for TypeScript
+  command = "npm ci --include=dev && npm run build"
 
   # Directory to publish (Vite builds to 'dist' by default)
   publish = "dist"
@@ -12,7 +12,7 @@
   base = "."
 
   # Node.js version and build environment variables
-  environment = { NODE_VERSION = "18", NODE_ENV = "production", VITE_APP_NAME = "Code Recipe Book", VITE_APP_VERSION = "1.0.0" }
+  environment = { NODE_VERSION = "18", VITE_APP_NAME = "Code Recipe Book", VITE_APP_VERSION = "1.0.0" }
 
 # Redirect rules for SPA (Single Page Application)
 [[redirects]]
