@@ -75,16 +75,16 @@ const Home: React.FC = () => {
       description: aiRecipe.description,
       ingredients: aiRecipe.ingredients,
       steps: aiRecipe.steps,
-      code_snippet: aiRecipe.code_snippet || null,
-      language: aiRecipe.language || null,
+      code_snippet: aiRecipe.code_snippet || undefined,
+      language: aiRecipe.language || undefined,
       difficulty: 'medium',
-      category: null,
-      prep_time: aiRecipe.prep_time || null,
-      cook_time: aiRecipe.cook_time || null,
-      servings: aiRecipe.servings || null,
+      category: undefined,
+      prep_time: aiRecipe.prep_time || undefined,
+      cook_time: aiRecipe.cook_time || undefined,
+      servings: aiRecipe.servings || undefined,
       author_id: user?.id || '',
       author_name: user?.user_metadata?.full_name || 'AI Generated',
-      image_url: null,
+      image_url: undefined,
       tags: [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -116,7 +116,7 @@ const Home: React.FC = () => {
         updated_at: undefined
       };
 
-      const savedRecipe = await RecipeService.createRecipe(recipeToSave);
+      const savedRecipe = await RecipeService.createRecipe(recipeToSave, user!.id, user!.user_metadata?.full_name);
 
       // Remove the AI recipe from the list and add the saved one
       setRecipes(prev => prev.filter(r => r.id !== recipe.id));

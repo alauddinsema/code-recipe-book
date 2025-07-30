@@ -37,9 +37,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     steps: initialData.steps || [],
     category: initialData.category || '',
     difficulty: initialData.difficulty || 'easy',
-    prep_time: initialData.prep_time || null,
-    cook_time: initialData.cook_time || null,
-    servings: initialData.servings || null,
+    prep_time: initialData.prep_time || undefined,
+    cook_time: initialData.cook_time || undefined,
+    servings: initialData.servings || undefined,
     code_snippet: initialData.code_snippet || '',
     language: initialData.language || '',
     tags: initialData.tags || [],
@@ -145,10 +145,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   };
 
   const addTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
+    if (tagInput.trim() && !(formData.tags || []).includes(tagInput.trim())) {
       setFormData(prev => ({
         ...prev,
-        tags: [...prev.tags, tagInput.trim()]
+        tags: [...(prev.tags || []), tagInput.trim()]
       }));
       setTagInput('');
     }
@@ -157,7 +157,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const removeTag = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      tags: prev.tags.filter((_, i) => i !== index)
+      tags: (prev.tags || []).filter((_, i) => i !== index)
     }));
   };
 
@@ -248,9 +248,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 type="number"
                 min="0"
                 value={formData.prep_time || ''}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  prep_time: e.target.value ? parseInt(e.target.value) : null 
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  prep_time: e.target.value ? parseInt(e.target.value) : undefined
                 }))}
                 className={`input-field ${errors.prep_time ? 'border-red-500' : ''}`}
                 placeholder="30"
@@ -268,9 +268,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 type="number"
                 min="0"
                 value={formData.cook_time || ''}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  cook_time: e.target.value ? parseInt(e.target.value) : null 
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  cook_time: e.target.value ? parseInt(e.target.value) : undefined
                 }))}
                 className={`input-field ${errors.cook_time ? 'border-red-500' : ''}`}
                 placeholder="45"
@@ -288,9 +288,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 type="number"
                 min="1"
                 value={formData.servings || ''}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  servings: e.target.value ? parseInt(e.target.value) : null 
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  servings: e.target.value ? parseInt(e.target.value) : undefined
                 }))}
                 className={`input-field ${errors.servings ? 'border-red-500' : ''}`}
                 placeholder="4"
@@ -489,9 +489,9 @@ function calculateCookingTime(servings) {
             </Button>
           </div>
 
-          {formData.tags.length > 0 && (
+          {(formData.tags || []).length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {formData.tags.map((tag, index) => (
+              {(formData.tags || []).map((tag, index) => (
                 <span
                   key={index}
                   className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full text-sm"

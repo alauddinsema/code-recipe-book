@@ -43,6 +43,7 @@ export interface RecipeFormData {
   cook_time?: number;
   servings?: number;
   tags?: string[];
+  image_url?: string;
 }
 
 export interface GeminiRecipeRequest {

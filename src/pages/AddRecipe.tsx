@@ -21,7 +21,7 @@ const AddRecipe: React.FC = () => {
 
     try {
       setLoading(true);
-      const recipe = await RecipeService.createRecipe(formData);
+      const recipe = await RecipeService.createRecipe(formData, user!.id, user!.user_metadata?.full_name);
       toast.success('Recipe created successfully!');
       navigate(`${ROUTES.RECIPE_DETAILS}/${recipe.id}`);
     } catch (error) {
