@@ -2,6 +2,7 @@ import React from 'react';
 import type { Recipe } from '../../types';
 import { DIFFICULTY_LEVELS } from '../../utils/constants';
 import CodeSnippet from './CodeSnippet';
+import InteractiveSteps from './InteractiveSteps';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -128,22 +129,13 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
             </ul>
           </section>
 
-          {/* Instructions */}
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-              Instructions
-            </h2>
-            <ol className="space-y-4">
-              {recipe.steps.map((step, index) => (
-                <li key={index} className="flex items-start space-x-4">
-                  <span className="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                    {index + 1}
-                  </span>
-                  <p className="text-gray-700 dark:text-gray-300 pt-1">{step}</p>
-                </li>
-              ))}
-            </ol>
-          </section>
+          {/* Interactive Instructions */}
+          <InteractiveSteps
+            steps={recipe.steps}
+            recipeId={recipe.id}
+            prepTime={recipe.prep_time}
+            cookTime={recipe.cook_time}
+          />
 
           {/* Code Snippet */}
           {recipe.code_snippet && (

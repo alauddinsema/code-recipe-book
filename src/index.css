@@ -31,3 +31,52 @@
     @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
   }
 }
+
+/* Cooking Mode Styles */
+.cooking-mode {
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.cooking-mode .step-text {
+  font-size: 1.25rem;
+  line-height: 1.8;
+}
+
+/* Interactive Steps Animations */
+.step-complete {
+  animation: completeStep 0.3s ease-out;
+}
+
+@keyframes completeStep {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Timer pulse animation */
+.timer-active {
+  animation: timerPulse 2s infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
