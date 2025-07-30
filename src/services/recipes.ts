@@ -2,7 +2,6 @@ import { supabase } from './supabase';
 import type { Database } from './supabase';
 import type { Recipe, RecipeFormData } from '../types';
 
-type RecipeInsert = Database['public']['Tables']['recipes']['Insert'];
 type RecipeUpdate = Database['public']['Tables']['recipes']['Update'];
 
 export class RecipeService {
