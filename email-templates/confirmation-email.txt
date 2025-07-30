@@ -1,0 +1,21 @@
+🍳 Code Recipe Book
+Where Cooking Meets Coding
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Welcome to our community!
+
+You're just one click away from exploring amazing recipes paired with code snippets. 
+Confirm your email to start your culinary coding journey.
+
+👉 Confirm Your Email: {{ .ConfirmationURL }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This link will expire in 24 hours for security reasons.
+
+Thanks for joining Code Recipe Book! 🚀
+Happy cooking and coding!
+
+---
+Code Recipe Book Team
