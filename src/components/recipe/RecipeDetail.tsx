@@ -3,6 +3,7 @@ import type { Recipe } from '../../types';
 import { DIFFICULTY_LEVELS } from '../../utils/constants';
 import CodeSnippet from './CodeSnippet';
 import InteractiveSteps from './InteractiveSteps';
+import TimerPanel from './TimerPanel';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -154,6 +155,13 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Cooking Timers */}
+          <TimerPanel
+            prepTime={recipe.prep_time}
+            cookTime={recipe.cook_time}
+            recipeTitle={recipe.title}
+          />
+
           {/* Tags */}
           {recipe.tags && recipe.tags.length > 0 && (
             <div className="card">
