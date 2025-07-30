@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Recipe } from '../../types';
 import { DIFFICULTY_LEVELS } from '../../utils/constants';
 import CodeSnippet from './CodeSnippet';
 import InteractiveSteps from './InteractiveSteps';
 import TimerPanel from './TimerPanel';
 import IngredientScaler from './IngredientScaler';
+import { RatingDisplay, RatingModal, ReviewList } from '../rating';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface RecipeDetailProps {
   recipe: Recipe;
 }
 
 const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
+  const { user } = useAuth();
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [currentRecipe, setCurrentRecipe] = useState(recipe);
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
@@ -99,6 +104,28 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
             </svg>
             <span>{formatDate(recipe.created_at)}</span>
           </div>
+        </div>
+
+        {/* Rating Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="mb-4 sm:mb-0">
+            <RatingDisplay
+              averageRating={currentRecipe.average_rating || 0}
+              ratingCount={currentRecipe.rating_count || 0}
+              size="lg"
+              showValue={true}
+              showCount={true}
+            />
+          </div>
+
+          {user && (
+            <button
+              onClick={() => setShowRatingModal(true)}
+              className="btn-primary text-sm px-4 py-2"
+            >
+              Rate Recipe
+            </button>
+          )}
         </div>
       </div>
 
@@ -213,6 +240,34 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
           </div>
         </div>
       </div>
+
+      {/* Reviews Section */}
+      <div className="mt-12">
+        <ReviewList
+          recipeId={recipe.id}
+          onReviewUpdate={() => {
+            // Refresh recipe data to get updated rating stats
+            window.location.reload();
+          }}
+        />
+      </div>
+
+      {/* Rating Modal */}
+      <RatingModal
+        isOpen={showRatingModal}
+        onClose={() => setShowRatingModal(false)}
+        recipeId={recipe.id}
+        recipeName={recipe.title}
+        onRatingSubmitted={(_rating, _review) => {
+          // Update local recipe state with new rating
+          setCurrentRecipe(prev => ({
+            ...prev,
+            // Note: In a real app, you'd want to refetch the recipe data
+            // For now, we'll just refresh the page to get updated stats
+          }));
+          window.location.reload();
+        }}
+      />
     </div>
   );
 };

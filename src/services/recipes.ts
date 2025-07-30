@@ -137,7 +137,9 @@ export class RecipeService {
     prepTimeRange?: [number, number];
     cookTimeRange?: [number, number];
     servingsRange?: [number, number];
-    sortBy?: 'newest' | 'oldest' | 'prep_time' | 'cook_time' | 'difficulty' | 'title';
+    minRating?: number;
+    minRatingCount?: number;
+    sortBy?: 'newest' | 'oldest' | 'prep_time' | 'cook_time' | 'difficulty' | 'title' | 'rating' | 'popularity';
     sortOrder?: 'asc' | 'desc';
     searchIn?: ('title' | 'description' | 'ingredients' | 'code')[];
   }) {
@@ -211,6 +213,15 @@ export class RecipeService {
       }
     }
 
+    // Rating filters
+    if (filters?.minRating && filters.minRating > 0) {
+      supabaseQuery = supabaseQuery.gte('average_rating', filters.minRating);
+    }
+
+    if (filters?.minRatingCount && filters.minRatingCount > 0) {
+      supabaseQuery = supabaseQuery.gte('rating_count', filters.minRatingCount);
+    }
+
     // Apply sorting
     const sortBy = filters?.sortBy || 'newest';
     const sortOrder = filters?.sortOrder || 'desc';
@@ -235,6 +246,17 @@ export class RecipeService {
         break;
       case 'title':
         supabaseQuery = supabaseQuery.order('title', { ascending });
+        break;
+      case 'rating':
+        supabaseQuery = supabaseQuery
+          .order('average_rating', { ascending: false, nullsFirst: false })
+          .order('rating_count', { ascending: false });
+        break;
+      case 'popularity':
+        // Sort by a combination of rating and rating count for popularity
+        supabaseQuery = supabaseQuery
+          .order('rating_count', { ascending: false })
+          .order('average_rating', { ascending: false, nullsFirst: false });
         break;
       default:
         supabaseQuery = supabaseQuery.order('created_at', { ascending: false });

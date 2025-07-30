@@ -4,6 +4,7 @@ import type { Recipe } from '../../types';
 import { ROUTES, DIFFICULTY_LEVELS } from '../../utils/constants';
 import { RecipeModal } from '../ui';
 import { FavoriteButton, CollectionModal } from '../favorites';
+import { RatingDisplay } from '../rating';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -91,6 +92,18 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe, onFavorit
         <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
           {recipe.description}
         </p>
+
+        {/* Rating Display */}
+        {(recipe.rating_count || 0) > 0 && (
+          <div className="mb-3">
+            <RatingDisplay
+              averageRating={recipe.average_rating || 0}
+              ratingCount={recipe.rating_count || 0}
+              size="sm"
+              showValue={false}
+            />
+          </div>
+        )}
 
         {/* Recipe Meta */}
         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">

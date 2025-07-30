@@ -16,7 +16,9 @@ export interface SearchFilters {
   prepTimeRange: [number, number];
   cookTimeRange: [number, number];
   servingsRange: [number, number];
-  sortBy: 'newest' | 'oldest' | 'prep_time' | 'cook_time' | 'difficulty' | 'title';
+  minRating: number;
+  minRatingCount: number;
+  sortBy: 'newest' | 'oldest' | 'prep_time' | 'cook_time' | 'difficulty' | 'title' | 'rating' | 'popularity';
   sortOrder: 'asc' | 'desc';
   searchIn: ('title' | 'description' | 'ingredients' | 'code')[];
 }
@@ -36,6 +38,8 @@ const DIETARY_TAGS = [
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest First' },
   { value: 'oldest', label: 'Oldest First' },
+  { value: 'rating', label: 'Highest Rated' },
+  { value: 'popularity', label: 'Most Popular' },
   { value: 'prep_time', label: 'Prep Time' },
   { value: 'cook_time', label: 'Cook Time' },
   { value: 'difficulty', label: 'Difficulty' },
@@ -57,6 +61,8 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     prepTimeRange: [0, 240], // 0 to 4 hours
     cookTimeRange: [0, 480], // 0 to 8 hours
     servingsRange: [1, 12],
+    minRating: 0,
+    minRatingCount: 0,
     sortBy: 'newest',
     sortOrder: 'desc',
     searchIn: ['title', 'description'],
@@ -101,6 +107,8 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
       prepTimeRange: [0, 240],
       cookTimeRange: [0, 480],
       servingsRange: [1, 12],
+      minRating: 0,
+      minRatingCount: 0,
       sortBy: 'newest',
       sortOrder: 'desc',
       searchIn: ['title', 'description']
@@ -343,6 +351,49 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                   onChange={(e) => updateFilter('servingsRange', [filters.servingsRange[0], parseInt(e.target.value)])}
                   className="w-full"
                 />
+              </div>
+            </div>
+
+            {/* Rating Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Minimum Rating */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Minimum Rating: {filters.minRating > 0 ? `${filters.minRating} stars` : 'Any'}
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="5"
+                  step="0.5"
+                  value={filters.minRating}
+                  onChange={(e) => updateFilter('minRating', parseFloat(e.target.value))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <span>Any</span>
+                  <span>5 stars</span>
+                </div>
+              </div>
+
+              {/* Minimum Rating Count */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Min Reviews: {filters.minRatingCount > 0 ? `${filters.minRatingCount}+` : 'Any'}
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="50"
+                  step="1"
+                  value={filters.minRatingCount}
+                  onChange={(e) => updateFilter('minRatingCount', parseInt(e.target.value))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <span>Any</span>
+                  <span>50+</span>
+                </div>
               </div>
             </div>
           </div>

@@ -22,6 +22,8 @@ const Home: React.FC = () => {
     prepTimeRange: [0, 240],
     cookTimeRange: [0, 480],
     servingsRange: [1, 12],
+    minRating: 0,
+    minRatingCount: 0,
     sortBy: 'newest',
     sortOrder: 'desc',
     searchIn: ['title', 'description']

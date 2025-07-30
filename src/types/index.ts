@@ -19,6 +19,10 @@ export interface Recipe {
   updated_at: string;
   image_url?: string;
   tags?: string[];
+  // Rating fields
+  average_rating?: number;
+  rating_count?: number;
+  total_rating_points?: number;
 }
 
 export interface User {
