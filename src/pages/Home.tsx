@@ -1,13 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { DocumentArrowUpIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
-import { RecipeCard, SEOHead, LazyRecipeCard, SimplePullToRefresh, InfiniteScrollContainer, ImportModal, ExportModal } from '../components';
+import { RecipeCard, SEOHead } from '../components';
 import { RecipeSuggestion } from '../components/ai';
 import { AdvancedSearchFilters, type SearchFilters } from '../components/search';
 import { RecipeService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
-import { useInfiniteScrollWithFilters } from '../hooks';
-import type { Recipe } from '../types';
+import type { Recipe, GeminiRecipeResponse } from '../types';
 import { ROUTES } from '../utils/constants';
 import toast from 'react-hot-toast';
 
@@ -15,8 +13,8 @@ const Home: React.FC = () => {
   const { user } = useAuth();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAISuggestion, setShowAISuggestion] = useState(false);
-  const [showImportModal, setShowImportModal] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: '',
     category: '',
@@ -32,94 +30,11 @@ const Home: React.FC = () => {
     searchIn: ['title', 'description']
   });
 
-  // Infinite scroll implementation
-  const fetchRecipes = useCallback(async (page: number, pageSize: number, filters: SearchFilters) => {
-    try {
-      const offset = (page - 1) * pageSize;
 
-      if (!filters.query.trim() && !hasActiveFiltersForSearch(filters)) {
-        // No search query or filters, load all recipes
-        const { recipes, count } = await RecipeService.getRecipes(offset, pageSize);
-        return {
-          items: recipes,
-          hasMore: recipes.length === pageSize,
-          total: count || undefined
-        };
-      } else {
-        // Perform advanced search with pagination
-        const searchResults = await RecipeService.searchRecipes(filters.query, {
-          category: filters.category || undefined,
-          difficulty: filters.difficulty || undefined,
-          tags: filters.tags.length > 0 ? filters.tags : undefined,
-          prepTimeRange: filters.prepTimeRange,
-          cookTimeRange: filters.cookTimeRange,
-          servingsRange: filters.servingsRange,
-          sortBy: filters.sortBy,
-          sortOrder: filters.sortOrder,
-          searchIn: filters.searchIn,
-          offset,
-          limit: pageSize
-        });
 
-        return {
-          items: searchResults,
-          hasMore: searchResults.length === pageSize
-        };
-      }
-    } catch (error) {
-      console.error('Failed to fetch recipes:', error);
-      throw error;
-    }
-  }, []);
 
-  const {
-    items: recipes,
-    loading,
-    hasMore,
-    error,
-    loadingRef,
-    refresh,
-    retry
-  } = useInfiniteScrollWithFilters(fetchRecipes, searchFilters, 20);
 
-  const handleRefresh = async () => {
-    try {
-      await refresh();
-      toast.success('Recipes refreshed!');
-    } catch (error) {
-      console.error('Failed to refresh recipes:', error);
-      toast.error('Failed to refresh recipes');
-    }
-  };
 
-  const handleFiltersChange = useCallback((filters: SearchFilters) => {
-    setSearchFilters(filters);
-  }, []);
-
-  const handleDebouncedSearch = useCallback((filters: SearchFilters) => {
-    setSearchFilters(filters);
-  }, []);
-
-  const handleSearch = useCallback(() => {
-    // Trigger refresh with current filters
-    refresh();
-  }, [refresh]);
-
-  const hasActiveFilters = () => {
-    return searchFilters.category || searchFilters.difficulty ||
-           searchFilters.tags.length > 0 || searchFilters.prepTimeRange[0] > 0 ||
-           searchFilters.prepTimeRange[1] < 240 || searchFilters.cookTimeRange[0] > 0 ||
-           searchFilters.cookTimeRange[1] < 480 || searchFilters.servingsRange[0] > 1 ||
-           searchFilters.servingsRange[1] < 12;
-  };
-
-  const hasActiveFiltersForSearch = (filters: SearchFilters) => {
-    return filters.category || filters.difficulty ||
-           filters.tags.length > 0 || filters.prepTimeRange[0] > 0 ||
-           filters.prepTimeRange[1] < 240 || filters.cookTimeRange[0] > 0 ||
-           filters.cookTimeRange[1] < 480 || filters.servingsRange[0] > 1 ||
-           filters.servingsRange[1] < 12;
-  };
 
   const handleAIRecipeGenerated = (aiRecipe: GeminiRecipeResponse) => {
     // Convert AI recipe to Recipe format and add to the list
@@ -139,18 +54,55 @@ const Home: React.FC = () => {
       language: aiRecipe.language,
       author_id: 'ai',
       author_name: 'AI Chef',
-      is_public: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       average_rating: 0,
       rating_count: 0,
-      is_ai_generated: true
+      total_rating_points: 0,
+      image_url: undefined
     };
 
     // Add the AI recipe to the top of the list
     setRecipes(prev => [recipe, ...prev]);
     setShowAISuggestion(false);
     toast.success('AI recipe generated successfully!');
+  };
+
+  // Load initial recipes
+  useEffect(() => {
+    const loadRecipes = async () => {
+      try {
+        setLoading(true);
+        const { recipes } = await RecipeService.getRecipes(0, 20);
+        setRecipes(recipes);
+      } catch (error) {
+        console.error('Failed to load recipes:', error);
+        toast.error('Failed to load recipes');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRecipes();
+  }, []);
+
+  // Helper function to check if filters have active search criteria
+  const hasActiveFiltersForSearch = (filters: SearchFilters) => {
+    return filters.category || filters.difficulty || filters.tags.length > 0 ||
+           filters.minRating > 0 || filters.minRatingCount > 0;
+  };
+
+  // Refresh function
+  const refresh = async () => {
+    try {
+      setLoading(true);
+      const { recipes } = await RecipeService.getRecipes(0, 20);
+      setRecipes(recipes);
+    } catch (error) {
+      console.error('Failed to refresh recipes:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSaveRecipe = async (recipe: Recipe) => {
@@ -166,7 +118,6 @@ const Home: React.FC = () => {
         id: undefined, // Let Supabase generate a new ID
         author_id: user.id,
         author_name: user.user_metadata?.full_name || user.email || 'Anonymous',
-        is_public: true,
         created_at: undefined, // Let Supabase set the timestamp
         updated_at: undefined
       };
@@ -180,6 +131,41 @@ const Home: React.FC = () => {
     } catch (error) {
       console.error('Failed to save recipe:', error);
       toast.error('Failed to save recipe. Please try again.');
+    }
+  };
+
+  // Handler functions for search
+  const handleFiltersChange = (filters: SearchFilters) => {
+    setSearchFilters(filters);
+  };
+
+  const handleSearch = async () => {
+    try {
+      setLoading(true);
+      if (!searchFilters.query.trim() && !hasActiveFiltersForSearch(searchFilters)) {
+        // No search query or filters, load all recipes
+        const { recipes } = await RecipeService.getRecipes(0, 20);
+        setRecipes(recipes);
+      } else {
+        // Perform search
+        const searchResults = await RecipeService.searchRecipes(searchFilters.query, {
+          category: searchFilters.category || undefined,
+          difficulty: searchFilters.difficulty || undefined,
+          tags: searchFilters.tags.length > 0 ? searchFilters.tags : undefined,
+          prepTimeRange: searchFilters.prepTimeRange,
+          cookTimeRange: searchFilters.cookTimeRange,
+          servingsRange: searchFilters.servingsRange,
+          sortBy: searchFilters.sortBy,
+          sortOrder: searchFilters.sortOrder,
+          searchIn: searchFilters.searchIn
+        });
+        setRecipes(searchResults);
+      }
+    } catch (error) {
+      console.error('Search failed:', error);
+      toast.error('Search failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -255,18 +241,14 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      <SimplePullToRefresh onRefresh={handleRefresh} className="h-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Advanced Search and Filters */}
           <div className="mb-8">
             <AdvancedSearchFilters
               onFiltersChange={handleFiltersChange}
               onSearch={handleSearch}
-              onDebouncedSearch={handleDebouncedSearch}
               loading={loading}
               initialFilters={searchFilters}
-              enableAutoSearch={true}
-              searchDelay={500}
             />
           </div>
 
@@ -277,28 +259,6 @@ const Home: React.FC = () => {
           </p>
 
           <div className="flex items-center space-x-2">
-            {/* Import/Export buttons */}
-            {user && (
-              <>
-                <button
-                  onClick={() => setShowImportModal(true)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
-                  title="Import Recipes"
-                >
-                  <DocumentArrowUpIcon className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setShowExportModal(true)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
-                  title="Export Recipes"
-                  disabled={recipes.length === 0}
-                >
-                  <DocumentArrowDownIcon className="w-5 h-5" />
-                </button>
-                <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-2"></div>
-              </>
-            )}
-
             {/* View mode buttons */}
             <button
               onClick={() => setViewMode('grid')}
@@ -327,49 +287,40 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* Recipe Grid/List with Infinite Scroll */}
-        <InfiniteScrollContainer
-          items={recipes}
-          loading={loading}
-          hasMore={hasMore}
-          error={error}
-          loadingRef={loadingRef as React.RefObject<HTMLDivElement>}
-          onRetry={retry}
-          onRefresh={refresh}
-          renderItem={(recipe: Recipe) => (
-            <LazyRecipeCard
-              fallback={
-                <div className="h-96 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
-              }
-            >
-              <RecipeCard
-                recipe={recipe}
-                onSaveRecipe={handleSaveRecipe}
-                searchQuery={searchFilters.query}
-                highlightSearchTerms={!!searchFilters.query.trim()}
-              />
-            </LazyRecipeCard>
-          )}
-          renderSkeleton={() => (
-            <div className="h-96 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
-          )}
-          skeletonCount={8}
-          emptyMessage={
-            searchFilters.query || hasActiveFilters()
-              ? 'No recipes found. Try adjusting your search criteria.'
-              : 'No recipes found. Be the first to add a recipe!'
-          }
-          emptyIcon={
-            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {/* Recipe Grid/List */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="h-96 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
+            ))}
+          </div>
+        ) : recipes.length === 0 ? (
+          <div className="text-center py-12 mb-8">
+            <svg className="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-          }
-          gridCols={viewMode === 'grid' ? 4 : 1}
-          gap="lg"
-          className="mb-8"
-        />
-        </div>
-      </SimplePullToRefresh>
+            <p className="text-gray-500 dark:text-gray-400">
+              {searchFilters.query || hasActiveFiltersForSearch(searchFilters)
+                ? 'No recipes found. Try adjusting your search criteria.'
+                : 'No recipes found. Be the first to add a recipe!'}
+            </p>
+          </div>
+        ) : (
+          <div className={`grid gap-6 mb-8 ${
+            viewMode === 'grid'
+              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              : 'grid-cols-1'
+          }`}>
+            {recipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                onSaveRecipe={handleSaveRecipe}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* AI Recipe Suggestion Modal */}
       {showAISuggestion && (
@@ -379,25 +330,7 @@ const Home: React.FC = () => {
         />
       )}
 
-      {/* Import Modal */}
-      <ImportModal
-        isOpen={showImportModal}
-        onClose={() => setShowImportModal(false)}
-        onImportComplete={(result) => {
-          // Refresh the recipes list after import
-          if (result.success.length > 0) {
-            refresh();
-          }
-        }}
-      />
 
-      {/* Export Modal */}
-      <ExportModal
-        isOpen={showExportModal}
-        onClose={() => setShowExportModal(false)}
-        recipes={recipes as Recipe[]}
-        title="Export Recipes"
-      />
     </div>
   );
 };
