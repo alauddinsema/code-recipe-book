@@ -37,13 +37,16 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && !recipeId.startsWith('ai-')) {
       checkFavoriteStatus();
+    } else if (recipeId.startsWith('ai-')) {
+      // AI recipes can't be favorited, set to false
+      setIsFavorited(false);
     }
   }, [user, recipeId]);
 
   const checkFavoriteStatus = async () => {
-    if (!user) return;
+    if (!user || recipeId.startsWith('ai-')) return;
 
     try {
       const favorited = await FavoritesService.isFavorited(user.id, recipeId);
@@ -59,11 +62,17 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
       return;
     }
 
+    // Prevent favoriting AI recipes
+    if (recipeId.startsWith('ai-')) {
+      toast.error('AI-generated recipes cannot be favorited. Please save the recipe first.');
+      return;
+    }
+
     if (loading) return;
 
     try {
       setLoading(true);
-      
+
       if (isFavorited) {
         await FavoritesService.removeFromFavorites(user.id, recipeId);
         setIsFavorited(false);
