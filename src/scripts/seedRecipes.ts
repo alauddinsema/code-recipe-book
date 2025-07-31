@@ -384,7 +384,7 @@ cooking.startCooking({{cook_time}});`
       for (let i = 0; i < recipes.length; i += this.BATCH_SIZE) {
         const batch = recipes.slice(i, i + this.BATCH_SIZE);
         
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('recipes')
           .insert(batch)
           .select();

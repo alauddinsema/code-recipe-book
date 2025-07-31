@@ -4,9 +4,6 @@
  */
 
 import axios from 'axios';
-import { GEMINI_API_KEY } from '../utils/constants';
-
-const IMAGEN_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:generateImage';
 
 export interface ImageGenerationRequest {
   prompt: string;
@@ -49,30 +46,7 @@ export class ImageGenerationService {
     }
   }
 
-  /**
-   * Build an optimized prompt for food image generation
-   */
-  private static buildImagePrompt(
-    title: string,
-    description: string,
-    ingredients: string[]
-  ): string {
-    // Extract key ingredients for the prompt
-    const keyIngredients = ingredients.slice(0, 5).join(', ');
-    
-    // Create a detailed, food-photography focused prompt
-    const prompt = `Professional food photography of ${title.toLowerCase()}, ${description.toLowerCase()}. 
-    
-Key ingredients visible: ${keyIngredients}. 
-
-Style: High-quality food photography, appetizing presentation, natural lighting, clean white or wooden background, restaurant-quality plating, vibrant colors, sharp focus, professional composition, mouth-watering appearance.
-
-Camera: Shot with professional DSLR, shallow depth of field, perfect exposure, no harsh shadows.
-
-Presentation: Beautifully plated, garnished appropriately, steam rising if hot dish, fresh ingredients visible, artistic but realistic styling.`;
-
-    return prompt.trim();
-  }
+  // Removed unused buildImagePrompt method - now handled by Netlify function
 
   /**
    * Generate image via Netlify function for production

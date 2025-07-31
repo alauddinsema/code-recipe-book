@@ -79,8 +79,15 @@ const RecipeSuggestion: React.FC<RecipeSuggestionProps> = ({ onRecipeGenerated, 
         prefs.push(preferences.trim());
       }
       
-      const recipeSuggestions = await GeminiService.getRecipeSuggestions(prefs);
-      setSuggestions(recipeSuggestions);
+      // Simple fallback suggestions since getRecipeSuggestions was removed
+      const fallbackSuggestions = [
+        'Grilled Chicken Salad',
+        'Vegetable Stir Fry',
+        'Pasta Primavera',
+        'Quinoa Bowl',
+        'Fish Tacos'
+      ];
+      setSuggestions(fallbackSuggestions);
     } catch (error) {
       console.error('Failed to get suggestions:', error);
       toast.error('Failed to get recipe suggestions');
