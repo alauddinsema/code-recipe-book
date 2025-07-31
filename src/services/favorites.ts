@@ -23,6 +23,11 @@ export interface CollectionRecipe {
 export class FavoritesService {
   // Add recipe to favorites
   static async addToFavorites(userId: string, recipeId: string): Promise<void> {
+    // AI-generated recipes can't be favorited - they need to be saved first
+    if (recipeId.startsWith('ai-')) {
+      throw new Error('AI-generated recipes cannot be favorited. Please save the recipe first.');
+    }
+
     const { error } = await supabase
       .from('favorites')
       .insert({
@@ -46,6 +51,11 @@ export class FavoritesService {
 
   // Check if recipe is favorited by user
   static async isFavorited(userId: string, recipeId: string): Promise<boolean> {
+    // AI-generated recipes have temporary IDs and can't be favorited
+    if (recipeId.startsWith('ai-')) {
+      return false;
+    }
+
     const { data, error } = await supabase
       .from('favorites')
       .select('id')

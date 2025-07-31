@@ -37,6 +37,9 @@ const Home: React.FC = () => {
 
 
   const handleAIRecipeGenerated = (aiRecipe: GeminiRecipeResponse) => {
+    console.log('🤖 AI Recipe Generated:', aiRecipe);
+    console.log('🖼️ Image URL:', aiRecipe.image_url);
+
     // Convert AI recipe to Recipe format and add to the list
     const recipe: Recipe = {
       id: `ai-${Date.now()}`, // Temporary ID for AI-generated recipes
@@ -59,7 +62,7 @@ const Home: React.FC = () => {
       average_rating: 0,
       rating_count: 0,
       total_rating_points: 0,
-      image_url: aiRecipe.image_url // Use the generated image URL
+      image_url: aiRecipe.image_url || `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop&crop=center&auto=format&q=80` // Use generated image or fallback
     };
 
     // Store AI-generated recipes in sessionStorage for access in detail view
