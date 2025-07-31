@@ -10,22 +10,22 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-      {/* Top Header */}
+      {/* Simplified Top Header - Only for branding and user actions */}
       <Navbar />
 
-      {/* Main Content with mobile-first spacing */}
-      <main className="flex-1 pb-20 md:pb-0">
-        <div className="max-w-md mx-auto md:max-w-7xl">
+      {/* Main Content - Optimized for bottom navigation */}
+      <main className="flex-1 pb-20 md:pb-0 pt-2">
+        <div className="max-w-md mx-auto md:max-w-7xl px-4 md:px-6 lg:px-8">
           {children}
         </div>
       </main>
 
-      {/* Bottom Navigation for Mobile */}
+      {/* Bottom Navigation - Primary navigation for mobile */}
       <div className="md:hidden">
         <BottomNavigation />
       </div>
 
-      {/* Footer for Desktop */}
+      {/* Desktop Footer */}
       <div className="hidden md:block">
         <Footer />
       </div>
