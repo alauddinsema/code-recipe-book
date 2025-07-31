@@ -75,16 +75,31 @@ const Home: React.FC = () => {
     // Add the AI recipe to the top of the list
     setRecipes(prev => [recipe, ...prev]);
     setShowAISuggestion(false);
-    toast.success('AI recipe generated successfully!');
+    toast.success('🤖 AI recipe generated successfully! It will persist until you close your browser.');
   };
 
-  // Load initial recipes
+  // Load initial recipes and restore AI-generated recipes from sessionStorage
   useEffect(() => {
     const loadRecipes = async () => {
       try {
         setLoading(true);
-        const { recipes } = await RecipeService.getRecipes(0, 20);
-        setRecipes(recipes);
+
+        // Load database recipes
+        const { recipes: dbRecipes } = await RecipeService.getRecipes(0, 20);
+
+        // Load AI-generated recipes from sessionStorage
+        const existingAIRecipes = sessionStorage.getItem('aiGeneratedRecipes');
+        const aiRecipes: Recipe[] = existingAIRecipes ? JSON.parse(existingAIRecipes) : [];
+
+        // Merge AI recipes (at the top) with database recipes
+        const allRecipes = [...aiRecipes, ...dbRecipes];
+
+        setRecipes(allRecipes);
+
+        // Log for debugging
+        if (aiRecipes.length > 0) {
+          console.log(`🤖 Restored ${aiRecipes.length} AI-generated recipes from sessionStorage`);
+        }
       } catch (error) {
         console.error('Failed to load recipes:', error);
         toast.error('Failed to load recipes');
