@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { Layout, ErrorBoundary } from './components';
+
 import {
   Home,
   AddRecipe,
@@ -41,6 +42,7 @@ function App() {
                   className: 'dark:bg-gray-800 dark:text-white',
                 }}
               />
+
             </div>
           </Router>
         </AuthProvider>

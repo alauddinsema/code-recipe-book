@@ -117,43 +117,47 @@ const RatingModal: React.FC<RatingModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+      <div className="card-elevated max-w-md w-full max-h-[90vh] overflow-hidden animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between p-8 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="text-2xl font-bold text-gradient-primary">
             {isEditing ? 'Update Rating' : 'Rate Recipe'}
           </h2>
           <button
+            type="button"
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+            aria-label="Close modal"
           >
             <XMarkIcon className="w-6 h-6" />
           </button>
         </div>
 
         {/* Content */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-8 space-y-8">
           {/* Recipe Info */}
           <div className="text-center">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               "{recipeName}"
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400">
               How would you rate this recipe?
             </p>
           </div>
 
           {/* Star Rating */}
-          <div className="text-center space-y-3">
-            <StarRating
-              rating={rating}
-              onRatingChange={setRating}
-              size="xl"
-              interactive
-              className="justify-center"
-            />
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
+          <div className="text-center space-y-4">
+            <div className="gradient-primary p-6 rounded-2xl">
+              <StarRating
+                rating={rating}
+                onRatingChange={setRating}
+                size="xl"
+                interactive
+                className="justify-center"
+              />
+            </div>
+            <p className="text-xl font-semibold text-gradient-primary">
               {getRatingText(rating)}
             </p>
           </div>

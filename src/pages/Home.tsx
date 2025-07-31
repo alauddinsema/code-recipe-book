@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { RecipeCard, RecipeSuggestion, SEOHead } from '../components';
+import { RecipeCard, SEOHead } from '../components';
+import { RecipeSuggestion } from '../components/ai';
 import { AdvancedSearchFilters, type SearchFilters } from '../components/search';
 import { RecipeService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
@@ -14,6 +15,7 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAISuggestion, setShowAISuggestion] = useState(false);
+
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: '',
     category: '',
@@ -89,35 +91,37 @@ const Home: React.FC = () => {
            searchFilters.servingsRange[1] < 12;
   };
 
+
+
   const handleAIRecipeGenerated = (aiRecipe: GeminiRecipeResponse) => {
-    // Create a temporary recipe object to display
-    const tempRecipe: Recipe = {
-      id: `ai-${Date.now()}`,
+    // Convert AI recipe to Recipe format and add to the list
+    const recipe: Recipe = {
+      id: `ai-${Date.now()}`, // Temporary ID for AI-generated recipes
       title: aiRecipe.title,
       description: aiRecipe.description,
       ingredients: aiRecipe.ingredients,
-      steps: aiRecipe.steps,
-      code_snippet: aiRecipe.code_snippet || undefined,
-      language: aiRecipe.language || undefined,
-      difficulty: 'medium',
-      category: undefined,
-      prep_time: aiRecipe.prep_time || undefined,
-      cook_time: aiRecipe.cook_time || undefined,
-      servings: aiRecipe.servings || undefined,
-      author_id: user?.id || '',
-      author_name: user?.user_metadata?.full_name || 'AI Generated',
-      image_url: undefined,
-      tags: [],
+      instructions: aiRecipe.instructions,
+      prep_time: aiRecipe.prep_time,
+      cook_time: aiRecipe.cook_time,
+      servings: aiRecipe.servings,
+      difficulty: aiRecipe.difficulty,
+      category: aiRecipe.category,
+      tags: aiRecipe.tags || [],
+      code_snippet: aiRecipe.code_snippet || '',
+      author_id: 'ai',
+      author_name: 'AI Chef',
+      is_public: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      average_rating: 0,
+      rating_count: 0,
+      is_ai_generated: true
     };
 
-    // Add the AI-generated recipe to the top of the list
-    setRecipes(prev => [tempRecipe, ...prev]);
+    // Add the AI recipe to the top of the list
+    setRecipes(prev => [recipe, ...prev]);
     setShowAISuggestion(false);
-
-    // Scroll to top to show the new recipe
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast.success('AI recipe generated successfully!');
   };
 
   const handleSaveRecipe = async (recipe: Recipe) => {
@@ -152,51 +156,71 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <SEOHead
         title="Home"
         description="Discover amazing cooking recipes with code snippets. Browse our collection of tech-inspired culinary creations from developers around the world."
         keywords="recipes, cooking, code snippets, programming, food, developers, culinary, tech recipes"
       />
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary-500 to-primary-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 text-white relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-accent-500/20"></div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6">
               Code Recipe Book
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-primary-100">
+            <p className="text-xl md:text-2xl mb-10 text-primary-100 max-w-3xl mx-auto leading-relaxed">
               Discover delicious recipes with code snippets for smart cooking
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
               {user ? (
                 <>
                   <Link
                     to={ROUTES.ADD_RECIPE}
-                    className="inline-flex items-center px-6 py-3 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                    className="inline-flex items-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-2xl hover:bg-gray-50 transition-colors duration-200 shadow-large"
                   >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                     Create Recipe
                   </Link>
                   <button
                     onClick={() => setShowAISuggestion(true)}
-                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
+                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-semibold rounded-2xl hover:from-accent-600 hover:to-accent-700 transition-all duration-200 shadow-large hover:shadow-glow-accent"
                   >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                     AI Generate Recipe
                   </button>
                 </>
               ) : (
-                <Link
-                  to={ROUTES.REGISTER}
-                  className="inline-flex items-center px-6 py-3 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-100 transition-colors duration-200"
-                >
-                  Get Started
-                </Link>
+                <>
+                  <Link
+                    to={ROUTES.REGISTER}
+                    className="inline-flex items-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-2xl hover:bg-gray-50 transition-colors duration-200 shadow-large"
+                  >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    Get Started
+                  </Link>
+                  <button
+                    onClick={() => setShowAISuggestion(true)}
+                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-semibold rounded-2xl hover:from-accent-600 hover:to-accent-700 transition-all duration-200 shadow-large hover:shadow-glow-accent"
+                  >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    AI Generate Recipe
+                  </button>
+                </>
               )}
             </div>
           </div>

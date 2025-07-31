@@ -81,30 +81,31 @@ const StarRating: React.FC<StarRatingProps> = ({
         aria-label={`Rate ${i} star${i !== 1 ? 's' : ''}`}
       >
         {isFilled ? (
-          <StarIcon 
+          <StarIcon
             className={`
-              ${sizeClasses[size]} 
-              ${hoverRating >= i ? 'text-yellow-400' : 'text-yellow-500'}
-              ${interactive && !disabled ? 'drop-shadow-sm' : ''}
-            `} 
+              ${sizeClasses[size]}
+              ${hoverRating >= i ? 'text-yellow-400 drop-shadow-lg' : 'text-yellow-500 drop-shadow-md'}
+              ${interactive && !disabled ? 'filter drop-shadow-sm' : ''}
+              transition-all duration-200
+            `}
           />
         ) : isPartiallyFilled ? (
           <div className="relative">
-            <StarOutlineIcon className={`${sizeClasses[size]} text-gray-300`} />
-            <div 
+            <StarOutlineIcon className={`${sizeClasses[size]} text-gray-300 dark:text-gray-600`} />
+            <div
               className="absolute inset-0 overflow-hidden"
               style={{ width: `${(displayRating - (i - 1)) * 100}%` }}
             >
-              <StarIcon className={`${sizeClasses[size]} text-yellow-500`} />
+              <StarIcon className={`${sizeClasses[size]} text-yellow-500 drop-shadow-md`} />
             </div>
           </div>
         ) : (
-          <StarOutlineIcon 
+          <StarOutlineIcon
             className={`
-              ${sizeClasses[size]} 
-              ${hoverRating >= i ? 'text-yellow-300' : 'text-gray-300'}
-              transition-colors duration-200
-            `} 
+              ${sizeClasses[size]}
+              ${hoverRating >= i ? 'text-yellow-400 scale-110' : 'text-gray-300 dark:text-gray-600'}
+              transition-all duration-200
+            `}
           />
         )}
       </button>
