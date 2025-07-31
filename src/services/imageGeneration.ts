@@ -83,9 +83,14 @@ Presentation: Beautifully plated, garnished appropriately, steam rising if hot d
     ingredients: string[]
   ): Promise<string | undefined> {
     try {
-      console.log('Using Netlify function for image generation...');
+      console.log('Using production Netlify function for image generation...');
 
-      const response = await axios.post('/.netlify/functions/generate-image', {
+      // Use production Netlify function URL for both development and production
+      const functionUrl = import.meta.env.DEV
+        ? 'https://recipebook-gpt.netlify.app/.netlify/functions/generate-image'
+        : '/.netlify/functions/generate-image';
+
+      const response = await axios.post(functionUrl, {
         title: recipeTitle,
         description: recipeDescription,
         ingredients: ingredients.slice(0, 5) // Limit ingredients to avoid long prompts

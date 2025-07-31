@@ -48,78 +48,9 @@ cookingTimer.startCooking();`,
   }
 
   static async generateRecipe(request: GeminiRecipeRequest): Promise<GeminiRecipeResponse> {
-    // Use Netlify function for secure API calls in production
-    const isProduction = window.location.hostname !== 'localhost';
-
-    if (isProduction) {
-      return this.generateRecipeViaNetlify(request);
-    }
-
-    // Development mode - direct API call
-    if (!GEMINI_API_KEY) {
-      throw new Error('Gemini API key is not configured');
-    }
-
-    const prompt = this.buildPrompt(request);
-
-    try {
-      console.log('Making request to Gemini API...');
-      const response = await axios.post(
-        `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`,
-        {
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 2048,
-          }
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          timeout: 30000, // 30 second timeout
-        }
-      );
-
-      console.log('Gemini API response received:', response.status);
-      const generatedText = response.data.candidates[0].content.parts[0].text;
-      const recipe = this.parseRecipeResponse(generatedText);
-
-      // Generate image for the recipe
-      console.log('Generating image for recipe:', recipe.title);
-      const imageUrl = await ImageGenerationService.generateRecipeImage(
-        recipe.title,
-        recipe.description,
-        recipe.ingredients
-      );
-
-      if (imageUrl) {
-        recipe.image_url = imageUrl;
-        console.log('Image generated successfully for recipe:', recipe.title);
-      } else {
-        console.warn('Failed to generate image for recipe:', recipe.title);
-      }
-
-      return recipe;
-    } catch (error: any) {
-      console.error('Gemini API error details:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        url: `${GEMINI_API_URL}?key=${GEMINI_API_KEY.substring(0, 10)}...`
-      });
-
-      // Use fallback mock recipe for development/testing
-      console.warn('Using fallback mock recipe due to API error');
-      return this.getMockRecipe(request.ingredients);
-    }
+    // Always use Netlify function for both development and production
+    // This simplifies the setup and uses the tested production functions
+    return this.generateRecipeViaNetlify(request);
   }
 
   private static buildPrompt(request: GeminiRecipeRequest): string {
@@ -230,9 +161,14 @@ Example format: ["Recipe Name 1", "Recipe Name 2", "Recipe Name 3", "Recipe Name
   // New method for production - uses Netlify function
   private static async generateRecipeViaNetlify(request: GeminiRecipeRequest): Promise<GeminiRecipeResponse> {
     try {
-      console.log('Using Netlify function for recipe generation...');
+      console.log('Using production Netlify function for recipe generation...');
 
-      const response = await axios.post('/.netlify/functions/generate-recipe', {
+      // Use production Netlify function URL for both development and production
+      const functionUrl = import.meta.env.DEV
+        ? 'https://recipebook-gpt.netlify.app/.netlify/functions/generate-recipe'
+        : '/.netlify/functions/generate-recipe';
+
+      const response = await axios.post(functionUrl, {
         ingredients: request.ingredients,
         preferences: request.preferences,
         dietary_restrictions: request.dietary_restrictions,
