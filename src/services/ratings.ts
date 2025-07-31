@@ -39,6 +39,11 @@ export class RatingService {
       throw new Error('Rating must be between 1 and 5');
     }
 
+    // AI-generated recipes can't be rated in the database
+    if (recipeId.startsWith('ai-')) {
+      throw new Error('AI-generated recipes cannot be rated. Please save the recipe first.');
+    }
+
     const { data, error } = await supabase
       .from('ratings')
       .upsert({
@@ -57,6 +62,11 @@ export class RatingService {
 
   // Get user's rating for a recipe
   static async getUserRating(userId: string, recipeId: string): Promise<Rating | null> {
+    // AI-generated recipes don't have ratings in the database
+    if (recipeId.startsWith('ai-')) {
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('ratings')
       .select('*')
@@ -70,6 +80,11 @@ export class RatingService {
 
   // Get all ratings for a recipe
   static async getRecipeRatings(recipeId: string): Promise<Rating[]> {
+    // AI-generated recipes don't have ratings in the database
+    if (recipeId.startsWith('ai-')) {
+      return [];
+    }
+
     const { data, error } = await supabase
       .from('ratings')
       .select('*')
@@ -139,6 +154,11 @@ export class RatingService {
 
   // Get user's review for a recipe
   static async getUserReview(userId: string, recipeId: string): Promise<Review | null> {
+    // AI-generated recipes don't have reviews in the database
+    if (recipeId.startsWith('ai-')) {
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('user_reviews_with_profile')
       .select('*')
@@ -152,6 +172,12 @@ export class RatingService {
 
   // Get all reviews for a recipe
   static async getRecipeReviews(recipeId: string, limit: number = 20): Promise<Review[]> {
+    // AI-generated recipes have temporary IDs and don't exist in the database
+    // Return empty array to avoid 400 errors
+    if (recipeId.startsWith('ai-')) {
+      return [];
+    }
+
     const { data, error } = await supabase
       .from('user_reviews_with_profile')
       .select('*')
