@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Recipe, GeminiRecipeResponse } from '../types';
 import { ROUTES } from '../utils/constants';
 import toast from 'react-hot-toast';
+import TestImageGeneration from '../components/TestImageGeneration';
 
 const Home: React.FC = () => {
   const { user } = useAuth();
@@ -330,6 +331,12 @@ const Home: React.FC = () => {
         />
       )}
 
+      {/* Development Test Component - Remove in production */}
+      {import.meta.env.DEV && (
+        <div className="mt-12">
+          <TestImageGeneration />
+        </div>
+      )}
 
     </div>
   );
