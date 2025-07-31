@@ -59,7 +59,7 @@ const Home: React.FC = () => {
       average_rating: 0,
       rating_count: 0,
       total_rating_points: 0,
-      image_url: undefined
+      image_url: aiRecipe.image_url // Use the generated image URL
     };
 
     // Add the AI recipe to the top of the list

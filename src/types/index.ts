@@ -66,6 +66,7 @@ export interface GeminiRecipeResponse {
   prep_time?: number;
   cook_time?: number;
   servings?: number;
+  image_url?: string;
 }
 
 export interface AuthContextType {

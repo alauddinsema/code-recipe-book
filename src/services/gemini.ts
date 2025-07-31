@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { GEMINI_API_KEY } from '../utils/constants';
 import type { GeminiRecipeRequest, GeminiRecipeResponse } from '../types';
+import { ImageGenerationService } from './imageGeneration';
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
@@ -88,7 +89,24 @@ cookingTimer.startCooking();`,
 
       console.log('Gemini API response received:', response.status);
       const generatedText = response.data.candidates[0].content.parts[0].text;
-      return this.parseRecipeResponse(generatedText);
+      const recipe = this.parseRecipeResponse(generatedText);
+
+      // Generate image for the recipe
+      console.log('Generating image for recipe:', recipe.title);
+      const imageUrl = await ImageGenerationService.generateRecipeImage(
+        recipe.title,
+        recipe.description,
+        recipe.ingredients
+      );
+
+      if (imageUrl) {
+        recipe.image_url = imageUrl;
+        console.log('Image generated successfully for recipe:', recipe.title);
+      } else {
+        console.warn('Failed to generate image for recipe:', recipe.title);
+      }
+
+      return recipe;
     } catch (error: any) {
       console.error('Gemini API error details:', {
         message: error.message,
@@ -215,7 +233,12 @@ Example format: ["Recipe Name 1", "Recipe Name 2", "Recipe Name 3", "Recipe Name
       console.log('Using Netlify function for recipe generation...');
 
       const response = await axios.post('/.netlify/functions/generate-recipe', {
-        ingredients: request.ingredients
+        ingredients: request.ingredients,
+        preferences: request.preferences,
+        dietary_restrictions: request.dietary_restrictions,
+        generateImage: true // Request image generation
+      }, {
+        timeout: 90000 // Increase timeout for image generation
       });
 
       if (response.data && response.data.title) {
