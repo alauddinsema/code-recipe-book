@@ -160,32 +160,17 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe, onFavorit
         )}
 
         {/* View Recipe Button */}
-        {recipe.id.startsWith('ai-') ? (
-          <button
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            className="w-full btn-primary text-sm font-semibold py-3 rounded-xl group-hover:shadow-glow-primary transition-all duration-300"
-          >
-            <span className="flex items-center justify-center space-x-2">
-              <span>View Recipe</span>
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </span>
-          </button>
-        ) : (
-          <Link
-            to={ROUTES.RECIPE_DETAILS.replace(':id', recipe.id)}
-            className="block w-full btn-primary text-sm font-semibold py-3 rounded-xl group-hover:shadow-glow-primary transition-all duration-300"
-          >
-            <span className="flex items-center justify-center space-x-2">
-              <span>View Recipe</span>
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </span>
-          </Link>
-        )}
+        <Link
+          to={ROUTES.RECIPE_DETAILS.replace(':id', recipe.id)}
+          className="block w-full btn-primary text-sm font-semibold py-3 rounded-xl group-hover:shadow-glow-primary transition-all duration-300"
+        >
+          <span className="flex items-center justify-center space-x-2">
+            <span>View Recipe</span>
+            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </span>
+        </Link>
       </div>
 
       {/* Recipe Modal for AI-generated recipes */}

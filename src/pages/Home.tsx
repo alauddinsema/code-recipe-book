@@ -8,7 +8,6 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Recipe, GeminiRecipeResponse } from '../types';
 import { ROUTES } from '../utils/constants';
 import toast from 'react-hot-toast';
-import TestImageGeneration from '../components/TestImageGeneration';
 
 const Home: React.FC = () => {
   const { user } = useAuth();
@@ -62,6 +61,16 @@ const Home: React.FC = () => {
       total_rating_points: 0,
       image_url: aiRecipe.image_url // Use the generated image URL
     };
+
+    // Store AI-generated recipes in sessionStorage for access in detail view
+    const existingAIRecipes = sessionStorage.getItem('aiGeneratedRecipes');
+    const aiRecipes: Recipe[] = existingAIRecipes ? JSON.parse(existingAIRecipes) : [];
+    aiRecipes.unshift(recipe); // Add to beginning
+    // Keep only the last 10 AI recipes to avoid storage bloat
+    if (aiRecipes.length > 10) {
+      aiRecipes.splice(10);
+    }
+    sessionStorage.setItem('aiGeneratedRecipes', JSON.stringify(aiRecipes));
 
     // Add the AI recipe to the top of the list
     setRecipes(prev => [recipe, ...prev]);
@@ -329,13 +338,6 @@ const Home: React.FC = () => {
           onRecipeGenerated={handleAIRecipeGenerated}
           onClose={() => setShowAISuggestion(false)}
         />
-      )}
-
-      {/* Development Test Component - Remove in production */}
-      {import.meta.env.DEV && (
-        <div className="mt-12">
-          <TestImageGeneration />
-        </div>
       )}
 
     </div>

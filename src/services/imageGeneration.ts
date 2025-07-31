@@ -32,50 +32,9 @@ export class ImageGenerationService {
     ingredients: string[]
   ): Promise<string | undefined> {
     try {
-      // Use Netlify function for secure API calls in production
-      const isProduction = window.location.hostname !== 'localhost';
-      
-      if (isProduction) {
-        return this.generateImageViaNetlify(recipeTitle, recipeDescription, ingredients);
-      }
-
-      // Development mode - direct API call
-      if (!GEMINI_API_KEY) {
-        console.warn('Gemini API key not configured, skipping image generation');
-        return undefined;
-      }
-
-      const prompt = this.buildImagePrompt(recipeTitle, recipeDescription, ingredients);
-      
-      console.log('Generating recipe image with prompt:', prompt);
-      
-      const response = await axios.post(
-        `${IMAGEN_API_URL}?key=${GEMINI_API_KEY}`,
-        {
-          prompt: {
-            text: prompt
-          },
-          numberOfImages: 1,
-          aspectRatio: 'ASPECT_RATIO_1_1',
-          negativePrompt: 'blurry, low quality, distorted, text overlay, watermark, logo, cartoon, anime, drawing, sketch, black and white'
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          timeout: 45000, // 45 second timeout for image generation
-        }
-      );
-
-      if (response.data?.images?.[0]?.bytesBase64Encoded) {
-        // Convert base64 to data URL
-        const base64Data = response.data.images[0].bytesBase64Encoded;
-        const mimeType = response.data.images[0].mimeType || 'image/png';
-        return `data:${mimeType};base64,${base64Data}`;
-      }
-
-      console.warn('No image data received from Imagen API');
-      return undefined;
+      // Always use Netlify functions to avoid CORS issues
+      // This works in both development (netlify dev) and production
+      return this.generateImageViaNetlify(recipeTitle, recipeDescription, ingredients);
 
     } catch (error: any) {
       console.error('Image generation error:', {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { RecipeDetail } from '../components';
 import { RecipeService } from '../services';
 import type { Recipe } from '../types';
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 const RecipeDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,8 +30,27 @@ const RecipeDetails: React.FC = () => {
 
       // Check if this is an AI-generated recipe (temporary ID)
       if (recipeId.startsWith('ai-')) {
-        setError('This is a temporary AI-generated recipe. Please save it to view details.');
-        toast.error('AI-generated recipes need to be saved first');
+        // Try to get the recipe from navigation state first
+        const stateRecipe = location.state?.recipe as Recipe;
+        if (stateRecipe && stateRecipe.id === recipeId) {
+          setRecipe(stateRecipe);
+          return;
+        }
+
+        // If no state recipe, try to find it in sessionStorage (fallback)
+        const storedRecipes = sessionStorage.getItem('aiGeneratedRecipes');
+        if (storedRecipes) {
+          const aiRecipes: Recipe[] = JSON.parse(storedRecipes);
+          const foundRecipe = aiRecipes.find(r => r.id === recipeId);
+          if (foundRecipe) {
+            setRecipe(foundRecipe);
+            return;
+          }
+        }
+
+        // If still not found, show error
+        setError('This AI-generated recipe is no longer available. Please generate a new one.');
+        toast.error('AI-generated recipe not found');
         return;
       }
 
