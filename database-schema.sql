@@ -1,5 +1,8 @@
 -- Code Recipe Book Database Schema
 -- Run this SQL in your Supabase SQL Editor to set up the database
+--
+-- IMPORTANT: After running this schema, also run database/grocery-schema.sql
+-- to fix the grocery list database emergency (missing tables)
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

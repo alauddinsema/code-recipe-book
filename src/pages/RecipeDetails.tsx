@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { RecipeDetail } from '../components';
+import { CookingModeLayout } from '../components/cooking/CookingModeLayout';
 import { RecipeService } from '../services';
 import type { Recipe } from '../types';
 import { ROUTES } from '../utils/constants';
@@ -13,6 +14,7 @@ const RecipeDetails: React.FC = () => {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCookingMode, setIsCookingMode] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -100,6 +102,25 @@ const RecipeDetails: React.FC = () => {
     );
   }
 
+  // Handle cooking mode
+  const handleStartCooking = () => {
+    setIsCookingMode(true);
+  };
+
+  const handleExitCooking = () => {
+    setIsCookingMode(false);
+  };
+
+  // Render cooking mode if active
+  if (isCookingMode && recipe) {
+    return (
+      <CookingModeLayout
+        recipe={recipe}
+        onExit={handleExitCooking}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-transparent dark:bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -118,7 +139,10 @@ const RecipeDetails: React.FC = () => {
         </div>
 
         {/* Recipe Detail Component */}
-        <RecipeDetail recipe={recipe} />
+        <RecipeDetail
+          recipe={recipe}
+          onStartCooking={handleStartCooking}
+        />
       </div>
     </div>
   );

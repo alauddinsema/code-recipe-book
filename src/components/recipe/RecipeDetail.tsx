@@ -6,13 +6,15 @@ import InteractiveSteps from './InteractiveSteps';
 import TimerPanel from './TimerPanel';
 import IngredientScaler from './IngredientScaler';
 import { RatingDisplay, RatingModal, ReviewList } from '../rating';
+import { CookingModeButton } from '../cooking/CookingModeButton';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface RecipeDetailProps {
   recipe: Recipe;
+  onStartCooking?: () => void;
 }
 
-const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
+const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onStartCooking }) => {
   const { user } = useAuth();
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [currentRecipe, setCurrentRecipe] = useState(recipe);
@@ -118,14 +120,24 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
             />
           </div>
 
-          {user && (
-            <button
-              onClick={() => setShowRatingModal(true)}
-              className="btn-primary text-sm px-4 py-2"
-            >
-              Rate Recipe
-            </button>
-          )}
+          <div className="flex items-center space-x-3">
+            {onStartCooking && (
+              <CookingModeButton
+                onStartCooking={onStartCooking}
+                className="flex-shrink-0"
+              />
+            )}
+
+            {user && (
+              <button
+                type="button"
+                onClick={() => setShowRatingModal(true)}
+                className="btn-primary text-sm px-4 py-2 flex-shrink-0"
+              >
+                Rate Recipe
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

@@ -12,18 +12,38 @@ The "Failed to save recipe" error indicates that the database tables haven't bee
 
 ### Step 2: Run Database Schema
 
+**CRITICAL: Run schemas in this exact order to fix database emergency:**
+
+#### 2.1 Core Schema (Required)
 1. In your Supabase dashboard, go to **SQL Editor** (left sidebar)
 2. Click **New Query**
 3. Copy the entire contents of `database-schema.sql` file
 4. Paste it into the SQL editor
-5. Click **Run** to execute the schema
+5. Click **Run** to execute the core schema
+
+#### 2.2 Grocery List Schema (EMERGENCY FIX)
+1. Click **New Query** again
+2. Copy the entire contents of `database/grocery-schema.sql` file
+3. Paste it into the SQL editor
+4. Click **Run** to execute the grocery schema
+
+**⚠️ IMPORTANT**: The grocery schema fixes a critical bug where grocery lists appeared to work but data wasn't being saved!
 
 ### Step 3: Verify Tables Created
 
-After running the schema, verify these tables exist in **Table Editor**:
+After running both schemas, verify these tables exist in **Table Editor**:
 
+#### Core Tables:
 - ✅ **profiles** - User profile information
 - ✅ **recipes** - Recipe data with all fields
+
+#### Grocery List Tables (NEW - Emergency Fix):
+- ✅ **grocery_categories** - Grocery categories with icons and colors
+- ✅ **grocery_lists** - User grocery lists with sharing capabilities
+- ✅ **grocery_items** - Individual items in grocery lists
+- ✅ **grocery_list_templates** - Reusable grocery list templates
+- ✅ **grocery_list_template_items** - Items in templates
+- ✅ **shopping_sessions** - Shopping session tracking
 
 ### Step 4: Check Row Level Security
 

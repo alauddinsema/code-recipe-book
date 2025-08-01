@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { RecipeCard, SEOHead } from '../components';
 import { RecipeSuggestion } from '../components/ai';
 import { AdvancedSearchFilters, type SearchFilters } from '../components/search';
+import { OfflineBanner, NetworkStatusBadge } from '../components/offline';
+import RecipeImporter from '../components/recipe/RecipeImporter';
+import WhatCanIMake from '../components/pantry/WhatCanIMake';
 import { RecipeService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
 import type { Recipe, GeminiRecipeResponse } from '../types';
@@ -13,6 +16,8 @@ const Home: React.FC = () => {
   const { user } = useAuth();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAISuggestion, setShowAISuggestion] = useState(false);
+  const [showRecipeImporter, setShowRecipeImporter] = useState(false);
+  const [showWhatCanIMake, setShowWhatCanIMake] = useState(false);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
@@ -79,6 +84,15 @@ const Home: React.FC = () => {
     setRecipes(prev => [recipe, ...prev]);
     setShowAISuggestion(false);
     toast.success('🤖 AI recipe generated successfully! It will persist until you close your browser.');
+  };
+
+  const handleRecipeImported = (importedRecipe: Recipe) => {
+    console.log('📥 Recipe Imported:', importedRecipe);
+
+    // Add the imported recipe to the top of the list
+    setRecipes(prev => [importedRecipe, ...prev]);
+    setShowRecipeImporter(false);
+    toast.success('📥 Recipe imported successfully!');
   };
 
   // Load initial recipes and restore AI-generated recipes from sessionStorage
@@ -204,6 +218,9 @@ const Home: React.FC = () => {
         description="Discover amazing cooking recipes with code snippets. Browse our collection of tech-inspired culinary creations from developers around the world."
         keywords="recipes, cooking, code snippets, programming, food, developers, culinary, tech recipes"
       />
+
+      {/* Offline Banner */}
+      <OfflineBanner />
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 text-white relative overflow-hidden">
         {/* Background Pattern */}
@@ -280,11 +297,37 @@ const Home: React.FC = () => {
             />
           </div>
 
+          {/* What Can I Make Section */}
+          {user && (
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg p-6 mb-8 border border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    🍽️ What Can I Make?
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Find recipes based on ingredients you have in your pantry
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowWhatCanIMake(true)}
+                  className="px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+                >
+                  Find Recipes
+                </button>
+              </div>
+            </div>
+          )}
+
         {/* View Mode Toggle and Results Count */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-gray-600 dark:text-gray-400">
-            {loading ? 'Loading...' : `${recipes.length} recipe${recipes.length !== 1 ? 's' : ''} found`}
-          </p>
+          <div className="flex items-center space-x-4">
+            <p className="text-gray-600 dark:text-gray-400">
+              {loading ? 'Loading...' : `${recipes.length} recipe${recipes.length !== 1 ? 's' : ''} found`}
+            </p>
+            <NetworkStatusBadge className="bg-gray-100 dark:bg-gray-800" />
+          </div>
 
           <div className="flex items-center space-x-2">
             {/* View mode buttons */}
@@ -356,6 +399,38 @@ const Home: React.FC = () => {
           onRecipeGenerated={handleAIRecipeGenerated}
           onClose={() => setShowAISuggestion(false)}
         />
+      )}
+
+      {/* Recipe Importer Modal */}
+      {showRecipeImporter && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <RecipeImporter
+            onRecipeImported={handleRecipeImported}
+            onClose={() => setShowRecipeImporter(false)}
+          />
+        </div>
+      )}
+
+      {/* What Can I Make Modal */}
+      {showWhatCanIMake && (
+        <WhatCanIMake
+          isModal={true}
+          onClose={() => setShowWhatCanIMake(false)}
+        />
+      )}
+
+      {/* Floating Action Button for Recipe Import */}
+      {user && (
+        <button
+          type="button"
+          onClick={() => setShowRecipeImporter(true)}
+          className="fixed bottom-20 right-4 bg-primary-600 hover:bg-primary-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-40"
+          aria-label="Import Recipe"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </button>
       )}
 
     </div>

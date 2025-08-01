@@ -10,6 +10,10 @@ import {
   Profile,
   RecipeDetails,
   Favorites,
+  OfflineRecipes,
+  GroceryLists,
+  Pantry,
+  MealPlanning,
   Login,
   Register
 } from './pages';
@@ -30,6 +34,10 @@ function App() {
                     <Route path={ROUTES.RECIPE_DETAILS} element={<RecipeDetails />} />
                     <Route path={ROUTES.PROFILE} element={<Profile />} />
                     <Route path={ROUTES.FAVORITES} element={<Favorites />} />
+                    <Route path={ROUTES.OFFLINE_RECIPES} element={<OfflineRecipes />} />
+                    <Route path={ROUTES.GROCERY_LISTS} element={<GroceryLists />} />
+                    <Route path={ROUTES.PANTRY} element={<Pantry />} />
+                    <Route path={ROUTES.MEAL_PLANNING} element={<MealPlanning />} />
                     <Route path={ROUTES.LOGIN} element={<Login />} />
                     <Route path={ROUTES.REGISTER} element={<Register />} />
                   </Routes>

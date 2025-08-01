@@ -5,6 +5,7 @@ import { ROUTES, DIFFICULTY_LEVELS } from '../../utils/constants';
 import { RecipeModal } from '../ui';
 import { FavoriteButton, CollectionModal } from '../favorites';
 import { RatingDisplay } from '../rating';
+import { OfflineDownloadButton } from '../offline/OfflineDownloadButton';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -87,6 +88,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSaveRecipe, onFavorit
             </span>
           </div>
         )}
+
+        {/* Offline Download Button */}
+        <div className="absolute bottom-4 right-4">
+          <OfflineDownloadButton
+            recipe={recipe}
+            size="sm"
+          />
+        </div>
       </div>
 
       {/* Recipe Content */}

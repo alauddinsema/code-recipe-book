@@ -15,6 +15,11 @@ export const ROUTES = {
   PROFILE: '/profile',
   FAVORITES: '/favorites',
   COLLECTIONS: '/collections',
+  OFFLINE_RECIPES: '/offline-recipes',
+  GROCERY_LISTS: '/grocery-lists',
+  GROCERY_LIST_DETAILS: '/grocery-lists/:id',
+  PANTRY: '/pantry',
+  MEAL_PLANNING: '/meal-planning',
   LOGIN: '/login',
   REGISTER: '/register',
 } as const;

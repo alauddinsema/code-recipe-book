@@ -3,7 +3,67 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
-// Development testing utilities removed - using production functions
+// Register Service Worker for PWA and offline functionality
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      console.log('✅ Service Worker registered successfully:', registration);
+
+      // Handle service worker updates
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New service worker is available
+              console.log('🔄 New service worker available');
+              // You could show a notification to the user here
+            }
+          });
+        }
+      });
+
+    } catch (error) {
+      console.error('❌ Service Worker registration failed:', error);
+    }
+  });
+
+  // Handle service worker messages
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'INIT_OFFLINE_STORAGE') {
+      // Initialize offline storage when requested by service worker
+      import('./services/offlineStorage').then(({ OfflineStorageService }) => {
+        OfflineStorageService.initializeDatabase()
+          .then(() => {
+            // Register background sync after initialization
+            return OfflineStorageService.registerBackgroundSync();
+          })
+          .catch(console.error);
+      });
+    }
+
+    if (event.data && event.data.type === 'SYNC_OFFLINE_RECIPES') {
+      // Handle offline recipe sync requested by service worker
+      console.log('🔄 Sync offline recipes requested by service worker');
+      import('./services/offlineStorage').then(({ OfflineStorageService }) => {
+        OfflineStorageService.syncOfflineRecipes().catch(console.error);
+      });
+    }
+  });
+
+  // Handle online/offline events for sync
+  window.addEventListener('online', () => {
+    console.log('📶 Connection restored - triggering sync');
+    import('./services/offlineStorage').then(({ OfflineStorageService }) => {
+      OfflineStorageService.syncOfflineRecipes().catch(console.error);
+    });
+  });
+
+  window.addEventListener('offline', () => {
+    console.log('📱 Device went offline');
+  });
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -7,12 +7,20 @@ import {
   PlusCircleIcon,
   HeartIcon,
   UserIcon,
+  CloudArrowDownIcon,
+  ShoppingCartIcon,
+  ArchiveBoxIcon,
+  CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 import {
   HomeIcon as HomeSolidIcon,
   PlusCircleIcon as PlusCircleSolidIcon,
   HeartIcon as HeartSolidIcon,
   UserIcon as UserSolidIcon,
+  CloudArrowDownIcon as CloudArrowDownSolidIcon,
+  ShoppingCartIcon as ShoppingCartSolidIcon,
+  ArchiveBoxIcon as ArchiveBoxSolidIcon,
+  CalendarDaysIcon as CalendarDaysSolidIcon,
 } from '@heroicons/react/24/solid';
 
 const BottomNavigation: React.FC = () => {
@@ -39,10 +47,24 @@ const BottomNavigation: React.FC = () => {
       requireAuth: true,
     },
     {
-      path: ROUTES.FAVORITES,
-      label: 'Favorites',
-      icon: HeartIcon,
-      activeIcon: HeartSolidIcon,
+      path: ROUTES.MEAL_PLANNING,
+      label: 'Meal Plan',
+      icon: CalendarDaysIcon,
+      activeIcon: CalendarDaysSolidIcon,
+      requireAuth: true,
+    },
+    {
+      path: ROUTES.GROCERY_LISTS,
+      label: 'Grocery',
+      icon: ShoppingCartIcon,
+      activeIcon: ShoppingCartSolidIcon,
+      requireAuth: true,
+    },
+    {
+      path: ROUTES.PANTRY,
+      label: 'Pantry',
+      icon: ArchiveBoxIcon,
+      activeIcon: ArchiveBoxSolidIcon,
       requireAuth: true,
     },
     {
