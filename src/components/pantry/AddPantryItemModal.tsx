@@ -104,6 +104,7 @@ const AddPantryItemModal: React.FC<AddPantryItemModalProps> = ({ categories, onI
               type="button"
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              aria-label="Close add pantry item modal"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -145,10 +146,11 @@ const AddPantryItemModal: React.FC<AddPantryItemModalProps> = ({ categories, onI
             {/* Quantity and Unit */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="pantry-quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Quantity *
                 </label>
                 <input
+                  id="pantry-quantity"
                   type="number"
                   min="0"
                   step="0.1"
@@ -160,10 +162,11 @@ const AddPantryItemModal: React.FC<AddPantryItemModalProps> = ({ categories, onI
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="pantry-unit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Unit *
                 </label>
                 <select
+                  id="pantry-unit"
                   value={formData.unit}
                   onChange={(e) => handleInputChange('unit', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
@@ -180,10 +183,11 @@ const AddPantryItemModal: React.FC<AddPantryItemModalProps> = ({ categories, onI
             {/* Category and Storage */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="pantry-category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Category *
                 </label>
                 <select
+                  id="pantry-category"
                   value={formData.category_id}
                   onChange={(e) => handleInputChange('category_id', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
@@ -198,10 +202,11 @@ const AddPantryItemModal: React.FC<AddPantryItemModalProps> = ({ categories, onI
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="storage-location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Storage Location
                 </label>
                 <select
+                  id="storage-location"
                   value={formData.storage_location}
                   onChange={(e) => handleInputChange('storage_location', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
@@ -217,10 +222,11 @@ const AddPantryItemModal: React.FC<AddPantryItemModalProps> = ({ categories, onI
             {/* Dates */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="purchase-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Purchase Date
                 </label>
                 <input
+                  id="purchase-date"
                   type="date"
                   value={formData.purchase_date}
                   onChange={(e) => handleInputChange('purchase_date', e.target.value)}
@@ -229,11 +235,12 @@ const AddPantryItemModal: React.FC<AddPantryItemModalProps> = ({ categories, onI
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="expiration-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Expiration Date
                 </label>
                 <div className="space-y-2">
                   <input
+                    id="expiration-date"
                     type="date"
                     value={formData.expiration_date}
                     onChange={(e) => handleInputChange('expiration_date', e.target.value)}
@@ -289,10 +296,11 @@ const AddPantryItemModal: React.FC<AddPantryItemModalProps> = ({ categories, onI
             {/* Low Stock Settings */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="low-stock-threshold" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Low Stock Threshold
                 </label>
                 <input
+                  id="low-stock-threshold"
                   type="number"
                   min="0"
                   step="0.1"

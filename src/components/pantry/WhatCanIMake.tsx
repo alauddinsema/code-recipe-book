@@ -108,6 +108,7 @@ const WhatCanIMake: React.FC<WhatCanIMakeProps> = ({ onClose, isModal = false })
             type="button"
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            aria-label="Close What Can I Make modal"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -155,10 +156,11 @@ const WhatCanIMake: React.FC<WhatCanIMakeProps> = ({ onClose, isModal = false })
 
             {/* Max Missing Ingredients */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="max-missing-ingredients" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Max Missing
               </label>
               <select
+                id="max-missing-ingredients"
                 value={filters.maxMissingIngredients || ''}
                 onChange={(e) => handleFilterChange('maxMissingIngredients', e.target.value ? Number(e.target.value) : undefined)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
@@ -174,10 +176,11 @@ const WhatCanIMake: React.FC<WhatCanIMakeProps> = ({ onClose, isModal = false })
 
             {/* Difficulty */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="difficulty-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Difficulty
               </label>
               <select
+                id="difficulty-filter"
                 value={filters.difficulty || ''}
                 onChange={(e) => handleFilterChange('difficulty', e.target.value || undefined)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"

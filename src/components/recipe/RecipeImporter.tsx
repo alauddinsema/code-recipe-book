@@ -137,9 +137,11 @@ const RecipeImporter: React.FC<RecipeImporterProps> = ({ onRecipeImported, onClo
         <h2 className="text-xl font-bold text-gray-900">Import Recipe</h2>
         {onClose && (
           <button
+            type="button"
             onClick={handleCancel}
             className="text-gray-400 hover:text-gray-600 transition-colors"
             disabled={isImporting}
+            aria-label="Close recipe importer"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

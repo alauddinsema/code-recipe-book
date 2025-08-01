@@ -83,6 +83,7 @@ const CreateMealPlanModal: React.FC<CreateMealPlanModalProps> = ({
               type="button"
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              aria-label="Close create meal plan modal"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -122,10 +123,11 @@ const CreateMealPlanModal: React.FC<CreateMealPlanModalProps> = ({
 
             {/* Start Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="meal-plan-start-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Start Date *
               </label>
               <input
+                id="meal-plan-start-date"
                 type="date"
                 value={formData.start_date}
                 onChange={(e) => handleInputChange('start_date', e.target.value)}
@@ -136,10 +138,11 @@ const CreateMealPlanModal: React.FC<CreateMealPlanModalProps> = ({
 
             {/* Duration */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="meal-plan-duration" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Duration
               </label>
               <select
+                id="meal-plan-duration"
                 value={formData.duration_days}
                 onChange={(e) => handleInputChange('duration_days', Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"

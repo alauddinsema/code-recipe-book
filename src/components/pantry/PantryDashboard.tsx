@@ -228,6 +228,7 @@ const PantryDashboard: React.FC = () => {
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            aria-label="Filter by category"
           >
             <option value="">All Categories</option>
             {categories.map((category) => (
