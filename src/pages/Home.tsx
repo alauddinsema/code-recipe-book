@@ -252,6 +252,7 @@ const Home: React.FC = () => {
                     Create Recipe
                   </Link>
                   <button
+                    type="button"
                     onClick={() => setShowAISuggestion(true)}
                     className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-semibold rounded-2xl hover:from-accent-600 hover:to-accent-700 transition-all duration-200 shadow-large hover:shadow-glow-accent"
                   >
@@ -273,6 +274,7 @@ const Home: React.FC = () => {
                     Get Started
                   </Link>
                   <button
+                    type="button"
                     onClick={() => setShowAISuggestion(true)}
                     className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-semibold rounded-2xl hover:from-accent-600 hover:to-accent-700 transition-all duration-200 shadow-large hover:shadow-glow-accent"
                   >
@@ -465,7 +467,6 @@ const Home: React.FC = () => {
         </button>
       )}
 
-        </div>
       </PullToRefresh>
     </div>
   );
