@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  HeartIcon, 
-  BookmarkIcon, 
+import {
+  HeartIcon,
+  BookmarkIcon,
   ShareIcon,
   ClockIcon,
   UserGroupIcon,
-  ChefHatIcon
+  CakeIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import type { Recipe } from '../../types';
-import { ROUTES } from '../../utils/constants';
 
 interface MobileRecipeCardProps {
   recipe: Recipe;
@@ -125,8 +124,10 @@ const MobileRecipeCard: React.FC<MobileRecipeCardProps> = ({
       {/* Swipe Actions Background */}
       <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-red-500 to-orange-500 flex items-center justify-end pr-4 space-x-3">
         <button
+          type="button"
           onClick={(e) => handleAction('favorite', e)}
           className="p-2 bg-white bg-opacity-20 rounded-full"
+          aria-label="Favorite recipe"
         >
           {isFavorited ? (
             <HeartSolidIcon className="w-5 h-5 text-white" />
@@ -135,14 +136,18 @@ const MobileRecipeCard: React.FC<MobileRecipeCardProps> = ({
           )}
         </button>
         <button
+          type="button"
           onClick={(e) => handleAction('save', e)}
           className="p-2 bg-white bg-opacity-20 rounded-full"
+          aria-label="Save recipe"
         >
           <BookmarkIcon className="w-5 h-5 text-white" />
         </button>
         <button
+          type="button"
           onClick={(e) => handleAction('share', e)}
           className="p-2 bg-white bg-opacity-20 rounded-full"
+          aria-label="Share recipe"
         >
           <ShareIcon className="w-5 h-5 text-white" />
         </button>
@@ -169,13 +174,13 @@ const MobileRecipeCard: React.FC<MobileRecipeCardProps> = ({
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <ChefHatIcon className="w-12 h-12 text-white opacity-60" />
+                <CakeIcon className="w-12 h-12 text-white opacity-60" />
               </div>
             )}
             
             {/* Difficulty Badge */}
             <div className="absolute top-3 left-3">
-              <span className={`px-2 py-1 text-xs font-medium rounded-full ${getDifficultyColor(recipe.difficulty)}`}>
+              <span className={`px-2 py-1 text-xs font-medium rounded-full ${getDifficultyColor(recipe.difficulty || 'medium')}`}>
                 {recipe.difficulty}
               </span>
             </div>
@@ -217,11 +222,11 @@ const MobileRecipeCard: React.FC<MobileRecipeCardProps> = ({
               </div>
 
               {/* Rating */}
-              {recipe.average_rating > 0 && (
+              {recipe.average_rating && recipe.average_rating > 0 && (
                 <div className="flex items-center space-x-1">
                   <span className="text-yellow-500">★</span>
                   <span className="font-medium">{recipe.average_rating.toFixed(1)}</span>
-                  <span className="text-xs">({recipe.rating_count})</span>
+                  <span className="text-xs">({recipe.rating_count || 0})</span>
                 </div>
               )}
             </div>
@@ -229,7 +234,7 @@ const MobileRecipeCard: React.FC<MobileRecipeCardProps> = ({
             {/* Author */}
             <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                by <span className="font-medium">{recipe.author_name}</span>
+                by <span className="font-medium">{recipe.author_name || 'Anonymous'}</span>
               </p>
             </div>
           </div>
@@ -244,6 +249,7 @@ const MobileRecipeCard: React.FC<MobileRecipeCardProps> = ({
             <p className="text-sm font-medium mb-1">Swipe left for quick actions</p>
             <p className="text-xs opacity-75">Favorite, Save, Share</p>
             <button
+              type="button"
               onClick={() => {
                 localStorage.setItem('swipe-tutorial-seen', 'true');
                 // Force re-render to hide overlay

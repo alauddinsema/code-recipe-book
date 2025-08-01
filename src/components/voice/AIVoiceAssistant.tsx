@@ -29,17 +29,15 @@ const AIVoiceAssistant: React.FC<AIVoiceAssistantProps> = ({
   cookingContext 
 }) => {
   const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isSpeaking] = useState(false);
   const [isAIMode, setIsAIMode] = useState(true);
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
-  const [currentTranscript, setCurrentTranscript] = useState('');
+  const [currentTranscript] = useState('');
   const [voiceLevel, setVoiceLevel] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Voice visualization
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number>(0);
 
   useEffect(() => {
     if (cookingContext) {
@@ -64,8 +62,7 @@ const AIVoiceAssistant: React.FC<AIVoiceAssistantProps> = ({
       analyserNode.fftSize = 256;
       source.connect(analyserNode);
       
-      setAudioContext(context);
-      setAnalyser(analyserNode);
+      // Audio context and analyser setup complete
       
       startVisualization(analyserNode);
     } catch (error) {

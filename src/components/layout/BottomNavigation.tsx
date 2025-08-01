@@ -6,16 +6,12 @@ import {
   HomeIcon,
   PlusCircleIcon,
   UserIcon,
-  ShoppingCartIcon,
-  ArchiveBoxIcon,
   CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 import {
   HomeIcon as HomeSolidIcon,
   PlusCircleIcon as PlusCircleSolidIcon,
   UserIcon as UserSolidIcon,
-  ShoppingCartIcon as ShoppingCartSolidIcon,
-  ArchiveBoxIcon as ArchiveBoxSolidIcon,
   CalendarDaysIcon as CalendarDaysSolidIcon,
 } from '@heroicons/react/24/solid';
 
