@@ -36,32 +36,20 @@ const BottomNavigation: React.FC = () => {
       requireAuth: false,
     },
     {
-      path: ROUTES.ADD_RECIPE,
-      label: 'Add Recipe',
+      path: '/discover',
+      label: 'Discover',
       icon: PlusCircleIcon,
       activeIcon: PlusCircleSolidIcon,
-      requireAuth: true,
+      requireAuth: false,
+      subItems: [ROUTES.ADD_RECIPE, '/ai-suggestions', '/import-recipe']
     },
     {
-      path: ROUTES.MEAL_PLANNING,
-      label: 'Meal Plan',
+      path: '/kitchen',
+      label: 'Kitchen',
       icon: CalendarDaysIcon,
       activeIcon: CalendarDaysSolidIcon,
       requireAuth: true,
-    },
-    {
-      path: ROUTES.GROCERY_LISTS,
-      label: 'Grocery',
-      icon: ShoppingCartIcon,
-      activeIcon: ShoppingCartSolidIcon,
-      requireAuth: true,
-    },
-    {
-      path: ROUTES.PANTRY,
-      label: 'Pantry',
-      icon: ArchiveBoxIcon,
-      activeIcon: ArchiveBoxSolidIcon,
-      requireAuth: true,
+      subItems: [ROUTES.MEAL_PLANNING, ROUTES.GROCERY_LISTS, ROUTES.PANTRY]
     },
     {
       path: ROUTES.PROFILE,

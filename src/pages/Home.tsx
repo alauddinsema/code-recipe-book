@@ -5,6 +5,8 @@ import { RecipeSuggestion } from '../components/ai';
 import { AdvancedSearchFilters, type SearchFilters } from '../components/search';
 import { OfflineBanner, NetworkStatusBadge } from '../components/offline';
 import RecipeImporter from '../components/recipe/RecipeImporter';
+import MobileRecipeCard from '../components/recipe/MobileRecipeCard';
+import PullToRefresh from '../components/mobile/PullToRefresh';
 import WhatCanIMake from '../components/pantry/WhatCanIMake';
 import { RecipeService } from '../services';
 import { useAuth } from '../contexts/AuthContext';
@@ -286,7 +288,8 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <PullToRefresh onRefresh={refresh}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Advanced Search and Filters */}
           <div className="mb-8">
             <AdvancedSearchFilters
@@ -387,11 +390,36 @@ const Home: React.FC = () => {
               : 'grid-cols-1'
           }`}>
             {recipes.map((recipe) => (
-              <RecipeCard
-                key={recipe.id}
-                recipe={recipe}
-                onSaveRecipe={handleSaveRecipe}
-              />
+              <div key={recipe.id}>
+                {/* Mobile Recipe Card */}
+                <div className="md:hidden">
+                  <MobileRecipeCard
+                    recipe={recipe}
+                    onFavorite={handleSaveRecipe}
+                    onSave={handleSaveRecipe}
+                    onShare={(recipe) => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: recipe.title,
+                          text: recipe.description,
+                          url: `${window.location.origin}/recipe/${recipe.id}`
+                        });
+                      } else {
+                        navigator.clipboard.writeText(`${window.location.origin}/recipe/${recipe.id}`);
+                        toast.success('Recipe link copied to clipboard!');
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Desktop Recipe Card */}
+                <div className="hidden md:block">
+                  <RecipeCard
+                    recipe={recipe}
+                    onSaveRecipe={handleSaveRecipe}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         )}
@@ -437,6 +465,8 @@ const Home: React.FC = () => {
         </button>
       )}
 
+        </div>
+      </PullToRefresh>
     </div>
   );
 };
