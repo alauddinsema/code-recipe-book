@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  WifiIcon, 
+import {
+  WifiIcon,
   SignalSlashIcon,
-  CloudArrowDownIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 

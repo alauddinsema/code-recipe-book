@@ -1,4 +1,3 @@
-import { supabase } from './supabase';
 import { PantryService } from './pantryService';
 import { RecipeService } from './recipes';
 import type { Recipe } from '../types';
@@ -49,18 +48,18 @@ export class IngredientSearchService {
       const allRecipes = await RecipeService.getRecipes();
       
       // Filter recipes based on basic criteria first
-      let filteredRecipes = allRecipes;
-      
+      let filteredRecipes = allRecipes.recipes || [];
+
       if (filters.difficulty) {
-        filteredRecipes = filteredRecipes.filter(recipe => recipe.difficulty === filters.difficulty);
+        filteredRecipes = filteredRecipes.filter((recipe: any) => recipe.difficulty === filters.difficulty);
       }
-      
+
       if (filters.category) {
-        filteredRecipes = filteredRecipes.filter(recipe => recipe.category === filters.category);
+        filteredRecipes = filteredRecipes.filter((recipe: any) => recipe.category === filters.category);
       }
-      
+
       if (filters.maxPrepTime) {
-        filteredRecipes = filteredRecipes.filter(recipe => 
+        filteredRecipes = filteredRecipes.filter((recipe: any) =>
           (recipe.prep_time || 0) <= filters.maxPrepTime!
         );
       }
@@ -68,7 +67,7 @@ export class IngredientSearchService {
       // Analyze each recipe for ingredient matches
       const searchResults: IngredientSearchResult[] = [];
 
-      for (const recipe of filteredRecipes) {
+      for (const recipe of filteredRecipes as any[]) {
         const analysis = await this.analyzeRecipeIngredients(
           recipe,
           allAvailableIngredients,
@@ -114,7 +113,7 @@ export class IngredientSearchService {
     filters: SearchFilters
   ): Promise<IngredientSearchResult> {
     const recipeIngredients = recipe.ingredients.map(ing => ing.toLowerCase());
-    const availableSet = new Set(availableIngredients);
+    // const availableSet = new Set(availableIngredients);
     
     const availableInRecipe: string[] = [];
     const missingInRecipe: string[] = [];
@@ -289,7 +288,7 @@ export class IngredientSearchService {
         return [];
       }
 
-      const expiringIngredients = expiringItems.map(item => item.name);
+      // const expiringIngredients = expiringItems.map(item => item.name);
       
       // Find recipes that use these expiring ingredients
       return await this.findRecipesByIngredients(userId, [], {

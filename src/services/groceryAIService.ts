@@ -3,7 +3,7 @@ import type {
   IngredientAnalysis,
   GroceryItem,
   GroceryList,
-  GroceryCategory,
+
   PriceEstimate
 } from '../types/grocery';
 import {
@@ -27,15 +27,15 @@ export class GroceryAIService {
    * Analyze ingredients from recipes and extract grocery items
    */
   async analyzeIngredientsFromRecipes(recipes: Recipe[]): Promise<IngredientAnalysis[]> {
-    try {
-      const allIngredients = recipes.flatMap(recipe =>
-        recipe.ingredients.map(ingredient => ({
-          text: ingredient,
-          recipe_id: recipe.id,
-          recipe_title: recipe.title
-        }))
-      );
+    const allIngredients = recipes.flatMap(recipe =>
+      recipe.ingredients.map(ingredient => ({
+        text: ingredient,
+        recipe_id: recipe.id,
+        recipe_title: recipe.title
+      }))
+    );
 
+    try {
       const response = await axios.post(`${this.apiBaseUrl}/analyze-ingredients`, {
         ingredients: allIngredients
       }, {
@@ -46,7 +46,7 @@ export class GroceryAIService {
     } catch (error) {
       console.error('Error analyzing ingredients:', error);
       // Fallback to local parsing if AI service fails
-      return allIngredients.map(ing => this.fallbackIngredientParsing(ing.text));
+      return allIngredients.map((ing: any) => this.fallbackIngredientParsing(ing.text));
     }
   }
 
@@ -65,7 +65,7 @@ export class GroceryAIService {
       const consolidatedItems = this.consolidateIngredients(analyses, servingAdjustments);
       
       // Generate grocery items
-      const groceryItems = consolidatedItems.map(this.createGroceryItem);
+      const groceryItems = consolidatedItems.map(this.createGroceryItem) as Omit<GroceryItem, 'id' | 'created_at' | 'updated_at'>[];
       
       // Estimate total price
       const totalPrice = await this.estimateTotalPrice(groceryItems);
@@ -73,7 +73,7 @@ export class GroceryAIService {
       return {
         title: this.generateListTitle(recipes),
         description: this.generateListDescription(recipes),
-        items: groceryItems,
+        items: groceryItems as any,
         recipe_ids: recipes.map(r => r.id),
         total_estimated_price: totalPrice,
         is_shared: false,
@@ -132,112 +132,10 @@ export class GroceryAIService {
     }
   }
 
-  /**
-   * Build ingredient analysis prompt
-   */
-  private buildIngredientAnalysisPrompt(ingredients: Array<{text: string, recipe_id: string, recipe_title: string}>): string {
-    const categories = DEFAULT_GROCERY_CATEGORIES.map(cat => `${cat.name} (${cat.icon})`).join(', ');
-    
-    return `
-You are a grocery shopping assistant. Analyze these recipe ingredients and extract structured grocery information.
 
-INGREDIENTS TO ANALYZE:
-${ingredients.map((ing, i) => `${i + 1}. "${ing.text}" (from ${ing.recipe_title})`).join('\n')}
 
-AVAILABLE CATEGORIES: ${categories}
 
-For each ingredient, provide:
-1. Parsed name (clean ingredient name without quantities)
-2. Quantity (number)
-3. Unit (standardized unit like cups, lbs, pieces, etc.)
-4. Category (from the available categories)
-5. Confidence (0-1 how confident you are in the parsing)
 
-Return ONLY a JSON array with this exact structure:
-[
-  {
-    "original_text": "2 cups all-purpose flour",
-    "parsed_name": "all-purpose flour",
-    "quantity": 2,
-    "unit": "cups",
-    "category": "Baking",
-    "confidence": 0.95
-  }
-]
-
-Rules:
-- Always return valid JSON
-- Use singular form for parsed_name
-- Standardize units (tbsp, tsp, cups, lbs, oz, pieces, etc.)
-- Choose the most appropriate category
-- If quantity is unclear, use 1 and unit "piece"
-- Confidence should reflect parsing certainty
-`;
-  }
-
-  /**
-   * Build price estimation prompt
-   */
-  private buildPriceEstimationPrompt(items: string[]): string {
-    return `
-You are a grocery price estimation expert. Provide realistic price estimates for these grocery items in USD.
-
-ITEMS TO PRICE:
-${items.map((item, i) => `${i + 1}. ${item}`).join('\n')}
-
-Return ONLY a JSON array with this exact structure:
-[
-  {
-    "item_name": "all-purpose flour",
-    "estimated_price": 3.49,
-    "price_range": {"min": 2.99, "max": 4.99},
-    "store_suggestions": ["Walmart", "Target", "Kroger"]
-  }
-]
-
-Rules:
-- Prices should be realistic for average US grocery stores
-- Include price range with min/max
-- Suggest 2-3 common stores where item is available
-- Consider typical package sizes (e.g., flour comes in 5lb bags)
-- Return valid JSON only
-`;
-  }
-
-  /**
-   * Build shopping optimization prompt
-   */
-  private buildShoppingOptimizationPrompt(groceryList: GroceryList): string {
-    const itemsByCategory = groceryList.items.reduce((acc, item) => {
-      const category = item.category.name;
-      if (!acc[category]) acc[category] = [];
-      acc[category].push(item.name);
-      return acc;
-    }, {} as Record<string, string[]>);
-
-    return `
-You are a shopping efficiency expert. Optimize this grocery list for efficient store navigation.
-
-CURRENT LIST BY CATEGORY:
-${Object.entries(itemsByCategory).map(([cat, items]) => 
-  `${cat}: ${items.join(', ')}`
-).join('\n')}
-
-Provide optimization suggestions:
-1. Optimal shopping order (which categories to visit first)
-2. Items that can be substituted or combined
-3. Bulk buying opportunities
-4. Items to buy last (perishables, frozen)
-
-Return ONLY a JSON object:
-{
-  "shopping_order": ["Produce", "Meat & Seafood", "Dairy & Eggs", "Frozen"],
-  "substitutions": [{"original": "item1", "substitute": "item2", "reason": "cheaper/better"}],
-  "bulk_opportunities": ["item1", "item2"],
-  "buy_last": ["item1", "item2"]
-}
-`;
-  }
 
   /**
    * Parse ingredient analysis response
@@ -470,7 +368,7 @@ Return ONLY a JSON object:
   /**
    * Apply shopping optimizations
    */
-  private applyShoppingOptimizations(items: GroceryItem[], optimizations: any): GroceryItem[] {
+  private applyShoppingOptimizations(items: GroceryItem[], _optimizations: any): GroceryItem[] {
     // This would apply the AI suggestions to reorder items, add notes, etc.
     // For now, return items as-is
     return items;

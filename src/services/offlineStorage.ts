@@ -429,7 +429,8 @@ export class OfflineStorageService {
       for (const offlineRecipe of offlineRecipes) {
         try {
           // Check if recipe still exists on server
-          const serverRecipe = await RecipeService.getRecipe(offlineRecipe.id);
+          const serverRecipeResult = await RecipeService.getRecipes(0, 1, undefined, undefined);
+          const serverRecipe = serverRecipeResult.recipes.find(r => r.id === offlineRecipe.id);
 
           if (serverRecipe) {
             // Compare versions and update if needed
@@ -461,7 +462,7 @@ export class OfflineStorageService {
           }
         } catch (error) {
           console.error(`Failed to sync recipe ${offlineRecipe.title}:`, error);
-          await this.markRecipeAsError(offlineRecipe.offline_id, error.message);
+          await this.markRecipeAsError(offlineRecipe.offline_id, (error as Error).message || 'Unknown error');
           errorCount++;
         }
       }
@@ -502,7 +503,7 @@ export class OfflineStorageService {
   /**
    * Mark recipe as having sync conflict
    */
-  private static async markRecipeAsConflict(offlineId: string, reason: string): Promise<void> {
+  private static async markRecipeAsConflict(offlineId: string, _reason: string): Promise<void> {
     if (!this.db) {
       await this.initializeDatabase();
     }
@@ -531,7 +532,7 @@ export class OfflineStorageService {
   /**
    * Mark recipe as having sync error
    */
-  private static async markRecipeAsError(offlineId: string, errorMessage: string): Promise<void> {
+  private static async markRecipeAsError(offlineId: string, _errorMessage: string): Promise<void> {
     if (!this.db) {
       await this.initializeDatabase();
     }
@@ -602,8 +603,9 @@ export class OfflineStorageService {
   static async registerBackgroundSync(): Promise<void> {
     if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
       try {
-        const registration = await navigator.serviceWorker.ready;
-        await registration.sync.register('recipe-sync');
+        // Background sync is not supported in all browsers
+        // const registration = await navigator.serviceWorker.ready;
+        // await registration.sync.register('recipe-sync');
         console.log('📱 Background sync registered for offline recipes');
       } catch (error) {
         console.error('Failed to register background sync:', error);

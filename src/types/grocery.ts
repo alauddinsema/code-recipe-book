@@ -47,6 +47,8 @@ export interface IngredientAnalysis {
   category: GroceryCategory;
   confidence: number;
   alternatives?: string[];
+  recipe_id?: string;
+  recipe_title?: string;
 }
 
 export interface PriceEstimate {

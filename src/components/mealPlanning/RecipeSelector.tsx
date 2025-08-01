@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { RecipeService } from '../../services/recipes';
-import { useAuth } from '../../hooks/useAuth';
+
 import { Button } from '../ui';
 import type { Recipe } from '../../types';
 
@@ -17,7 +17,6 @@ const RecipeSelector: React.FC<RecipeSelectorProps> = ({
   mealType,
   dayOfWeek
 }) => {
-  const { user } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +31,7 @@ const RecipeSelector: React.FC<RecipeSelectorProps> = ({
   const loadRecipes = async () => {
     try {
       setLoading(true);
-      const allRecipes = await RecipeService.getRecipes();
+      const { recipes: allRecipes } = await RecipeService.getRecipes();
       setRecipes(allRecipes);
     } catch (error) {
       console.error('Failed to load recipes:', error);

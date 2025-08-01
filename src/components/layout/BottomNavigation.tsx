@@ -5,9 +5,7 @@ import { ROUTES } from '../../utils/constants';
 import {
   HomeIcon,
   PlusCircleIcon,
-  HeartIcon,
   UserIcon,
-  CloudArrowDownIcon,
   ShoppingCartIcon,
   ArchiveBoxIcon,
   CalendarDaysIcon,
@@ -15,9 +13,7 @@ import {
 import {
   HomeIcon as HomeSolidIcon,
   PlusCircleIcon as PlusCircleSolidIcon,
-  HeartIcon as HeartSolidIcon,
   UserIcon as UserSolidIcon,
-  CloudArrowDownIcon as CloudArrowDownSolidIcon,
   ShoppingCartIcon as ShoppingCartSolidIcon,
   ArchiveBoxIcon as ArchiveBoxSolidIcon,
   CalendarDaysIcon as CalendarDaysSolidIcon,

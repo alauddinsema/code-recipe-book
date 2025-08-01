@@ -1,5 +1,4 @@
 import { supabase } from './supabase';
-import type { User } from '../types';
 
 // Pantry types
 export interface PantryItem {

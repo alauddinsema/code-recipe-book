@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  PlusIcon, 
+import {
   SparklesIcon,
   ShoppingCartIcon,
   ListBulletIcon
@@ -66,7 +65,7 @@ const GroceryLists: React.FC = () => {
     }
   };
 
-  const handleShareList = async (listId: string) => {
+  const handleShareList = async (_listId: string) => {
     // This would open a share modal - for now just show a toast
     toast.success('Share functionality coming soon!');
   };

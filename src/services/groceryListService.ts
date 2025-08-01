@@ -1,11 +1,9 @@
 import { supabase } from './supabase';
 import { groceryAIService } from './groceryAIService';
-import type { 
-  GroceryList, 
-  GroceryItem, 
-  GroceryListTemplate,
-  ShoppingSession,
-  GroceryListStatus
+import type {
+  GroceryList,
+  GroceryItem,
+  ShoppingSession
 } from '../types/grocery';
 import type { Recipe } from '../types';
 

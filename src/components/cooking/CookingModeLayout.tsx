@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
   PlayIcon, 
   PauseIcon, 
@@ -27,7 +26,6 @@ export const CookingModeLayout: React.FC<CookingModeLayoutProps> = ({
   recipe,
   onExit
 }) => {
-  const navigate = useNavigate();
   const voiceService = useRef<VoiceService | null>(null);
   
   // Cooking state
@@ -50,8 +48,8 @@ export const CookingModeLayout: React.FC<CookingModeLayoutProps> = ({
   // Screen wake lock
   const [wakeLock, setWakeLock] = useState<WakeLockSentinel | null>(null);
 
-  // Parse recipe steps
-  const steps = recipe.instructions?.split('\n').filter(step => step.trim()) || [];
+  // Parse recipe steps - use steps array directly from recipe
+  const steps = recipe.steps || [];
   const totalSteps = steps.length;
 
   useEffect(() => {
@@ -335,14 +333,15 @@ export const CookingModeLayout: React.FC<CookingModeLayoutProps> = ({
   };
 
   const readCookTime = () => {
-    if (voiceEnabled && recipe.cookTime) {
-      speak(`Cook time is ${recipe.cookTime} minutes`);
+    if (voiceEnabled && recipe.cook_time) {
+      speak(`Cook time is ${recipe.cook_time} minutes`);
     }
   };
 
   const readTotalTime = () => {
-    if (voiceEnabled && recipe.totalTime) {
-      speak(`Total time is ${recipe.totalTime} minutes`);
+    const totalTime = (recipe.prep_time || 0) + (recipe.cook_time || 0);
+    if (voiceEnabled && totalTime > 0) {
+      speak(`Total time is ${totalTime} minutes`);
     }
   };
 
@@ -597,11 +596,11 @@ export const CookingModeLayout: React.FC<CookingModeLayoutProps> = ({
             <div>
               <h4 className="font-medium text-gray-900 dark:text-white mb-2">Details</h4>
               <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                {recipe.cookTime && (
-                  <p><span className="font-medium">Cook Time:</span> {recipe.cookTime} minutes</p>
+                {recipe.cook_time && (
+                  <p><span className="font-medium">Cook Time:</span> {recipe.cook_time} minutes</p>
                 )}
-                {recipe.totalTime && (
-                  <p><span className="font-medium">Total Time:</span> {recipe.totalTime} minutes</p>
+                {(recipe.prep_time || recipe.cook_time) && (
+                  <p><span className="font-medium">Total Time:</span> {(recipe.prep_time || 0) + (recipe.cook_time || 0)} minutes</p>
                 )}
                 {recipe.servings && (
                   <p><span className="font-medium">Servings:</span> {recipe.servings}</p>

@@ -43,7 +43,7 @@ export interface RecipeImportStatus {
 
 export class RecipeImporterService {
   private static readonly TIMEOUT = 30000; // 30 seconds
-  private static readonly MAX_RETRIES = 3;
+  // private static readonly MAX_RETRIES = 3;
 
   /**
    * Import recipe from URL using AI parsing
@@ -244,7 +244,7 @@ export class RecipeImporterService {
   /**
    * Update import status (for progress tracking)
    */
-  private static async updateImportStatus(importId: string, status: string, progress: number, message: string) {
+  private static async updateImportStatus(importId: string, status: string, _progress: number, _message: string) {
     // This would typically update a separate status table or use real-time updates
     // For now, we'll update the main import record
     await this.updateImportRecord(importId, {

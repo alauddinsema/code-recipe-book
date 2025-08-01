@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { OfflineStorageService, type OfflineRecipe } from '../services/offlineStorage';
 import { OfflineStorageStats, OfflineBanner } from '../components/offline';
 import { RecipeCard } from '../components/recipe';
-import { SearchBar } from '../components/search';
+
 import { Loading } from '../components/ui';
 import { SEOHead } from '../components';
 import { ROUTES } from '../utils/constants';
@@ -75,16 +75,16 @@ const OfflineRecipes: React.FC = () => {
     setFilteredRecipes(filtered);
   };
 
-  const handleRemoveRecipe = async (recipeId: string) => {
-    try {
-      await OfflineStorageService.removeOfflineRecipe(recipeId);
-      await loadOfflineRecipes(); // Refresh the list
-      toast.success('Recipe removed from offline storage');
-    } catch (error) {
-      console.error('Failed to remove recipe:', error);
-      toast.error('Failed to remove recipe');
-    }
-  };
+  // const handleRemoveRecipe = async (recipeId: string) => {
+  //   try {
+  //     await OfflineStorageService.removeOfflineRecipe(recipeId);
+  //     await loadOfflineRecipes(); // Refresh the list
+  //     toast.success('Recipe removed from offline storage');
+  //   } catch (error) {
+  //     console.error('Failed to remove recipe:', error);
+  //     toast.error('Failed to remove recipe');
+  //   }
+  // };
 
   const handleClearAll = async () => {
     try {

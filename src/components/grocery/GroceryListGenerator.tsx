@@ -46,7 +46,7 @@ export const GroceryListGenerator: React.FC<GroceryListGeneratorProps> = ({
   const loadAvailableRecipes = async () => {
     try {
       setLoadingRecipes(true);
-      const recipes = await RecipeService.getAllRecipes();
+      const { recipes } = await RecipeService.getRecipes();
       setAvailableRecipes(recipes);
     } catch (error) {
       console.error('Error loading recipes:', error);
@@ -255,12 +255,15 @@ export const GroceryListGenerator: React.FC<GroceryListGeneratorProps> = ({
                 <div className="grid gap-4">
                   {filteredAvailableRecipes.map(recipe => (
                     <div key={recipe.id} className="relative">
-                      <RecipeCard
-                        recipe={recipe}
-                        onSaveRecipe={() => {}} // Not needed here
-                        className="cursor-pointer hover:ring-2 hover:ring-primary-500"
+                      <div
+                        className="cursor-pointer hover:ring-2 hover:ring-primary-500 rounded-lg"
                         onClick={() => handleAddRecipe(recipe)}
-                      />
+                      >
+                        <RecipeCard
+                          recipe={recipe}
+                          onSaveRecipe={() => {}} // Not needed here
+                        />
+                      </div>
                       <button
                         onClick={() => handleAddRecipe(recipe)}
                         className="absolute top-2 right-2 p-2 bg-primary-500 hover:bg-primary-600 text-white rounded-full shadow-lg transition-colors"

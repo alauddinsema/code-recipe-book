@@ -78,7 +78,7 @@ const RecipeImporter: React.FC<RecipeImporterProps> = ({ onRecipeImported, onClo
       const result: RecipeImportResult = await RecipeImporterService.importRecipeFromUrl({
         url: url.trim(),
         userId: user.id,
-        userName: user.name
+        userName: user.user_metadata?.name || user.email || 'Anonymous'
       });
 
       if (result.success && result.recipe) {
