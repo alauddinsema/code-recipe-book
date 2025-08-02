@@ -7,12 +7,27 @@ import type { Recipe } from '../types';
 import { ROUTES } from '../utils/constants';
 import toast from 'react-hot-toast';
 
+type UnitSystem = 'metric' | 'imperial';
+type WeightUnit = 'kg' | 'lb';
+
+interface UserPreferences {
+  unitSystem: UnitSystem;
+  weightUnit: WeightUnit;
+  autoConvertSmallWeights: boolean;
+}
+
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [userRecipes, setUserRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'recipes' | 'settings'>('recipes');
+  const [preferences, setPreferences] = useState<UserPreferences>({
+    unitSystem: 'metric',
+    weightUnit: 'kg',
+    autoConvertSmallWeights: true
+  });
+  const [preferencesLoading, setPreferencesLoading] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -20,6 +35,7 @@ const Profile: React.FC = () => {
       return;
     }
     loadUserRecipes();
+    loadUserPreferences();
   }, [user, navigate]);
 
   const loadUserRecipes = async () => {
@@ -34,6 +50,32 @@ const Profile: React.FC = () => {
       toast.error('Failed to load your recipes');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadUserPreferences = () => {
+    try {
+      const savedPreferences = localStorage.getItem(`user_preferences_${user?.id}`);
+      if (savedPreferences) {
+        const parsed = JSON.parse(savedPreferences);
+        setPreferences(parsed);
+      }
+    } catch (error) {
+      console.error('Failed to load user preferences:', error);
+    }
+  };
+
+  const saveUserPreferences = async (newPreferences: UserPreferences) => {
+    try {
+      setPreferencesLoading(true);
+      localStorage.setItem(`user_preferences_${user?.id}`, JSON.stringify(newPreferences));
+      setPreferences(newPreferences);
+      toast.success('Preferences saved successfully');
+    } catch (error) {
+      console.error('Failed to save user preferences:', error);
+      toast.error('Failed to save preferences');
+    } finally {
+      setPreferencesLoading(false);
     }
   };
 
@@ -237,6 +279,70 @@ const Profile: React.FC = () => {
                       Days Active
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                  Unit Preferences
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Unit System
+                    </label>
+                    <select
+                      value={preferences.unitSystem}
+                      onChange={(e) => saveUserPreferences({ ...preferences, unitSystem: e.target.value as UnitSystem })}
+                      disabled={preferencesLoading}
+                      className="input-field"
+                      aria-label="Select unit system preference"
+                    >
+                      <option value="metric">Metric (kg, g, ml, l)</option>
+                      <option value="imperial">Imperial (lb, oz, cups, fl oz)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Weight Unit
+                    </label>
+                    <select
+                      value={preferences.weightUnit}
+                      onChange={(e) => saveUserPreferences({ ...preferences, weightUnit: e.target.value as WeightUnit })}
+                      disabled={preferencesLoading}
+                      className="input-field"
+                      aria-label="Select weight unit preference"
+                    >
+                      <option value="kg">Kilograms (kg)</option>
+                      <option value="lb">Pounds (lb)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={preferences.autoConvertSmallWeights}
+                        onChange={(e) => saveUserPreferences({ ...preferences, autoConvertSmallWeights: e.target.checked })}
+                        disabled={preferencesLoading}
+                        className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        Auto-convert small weights (e.g., 0.5 kg → 500 g)
+                      </span>
+                    </label>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 ml-7">
+                      Automatically convert weights less than 1 kg to grams for better readability
+                    </p>
+                  </div>
+
+                  {preferencesLoading && (
+                    <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
+                      <span>Saving preferences...</span>
+                    </div>
+                  )}
                 </div>
               </div>
 

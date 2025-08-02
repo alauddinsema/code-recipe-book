@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { CalculatorIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../../contexts/AuthContext';
+import { getUserPreferences, convertUnit, formatAmount, formatUnit } from '../../utils/unitConversion';
 
 interface IngredientScalerProps {
   ingredients: string[];
@@ -20,8 +22,12 @@ const IngredientScaler: React.FC<IngredientScalerProps> = ({
   originalServings,
   onScaledIngredientsChange
 }) => {
+  const { user } = useAuth();
   const [targetServings, setTargetServings] = useState(originalServings);
   const [showScaled, setShowScaled] = useState(false);
+
+  // Get user preferences for unit conversion
+  const userPreferences = getUserPreferences(user?.id);
 
   // Unit conversion mappings
   const unitConversions = {
@@ -139,47 +145,12 @@ const IngredientScaler: React.FC<IngredientScalerProps> = ({
       return { amount: Math.round(scaledAmount * 4) / 4, unit }; // Round to nearest quarter
     }
 
-    return { amount: Math.round(scaledAmount * 100) / 100, unit };
-  };
-
-  const formatAmount = (amount: number): string => {
-    // Convert decimals to fractions for common cooking measurements
-    const fractions: { [key: number]: string } = {
-      0.125: '1/8',
-      0.25: '1/4',
-      0.33: '1/3',
-      0.375: '3/8',
-      0.5: '1/2',
-      0.625: '5/8',
-      0.67: '2/3',
-      0.75: '3/4',
-      0.875: '7/8'
+    // Apply smart unit conversion based on user preferences
+    const converted = convertUnit(Math.round(scaledAmount * 100) / 100, unit, userPreferences);
+    return {
+      amount: converted.amount,
+      unit: formatUnit(converted.amount, converted.unit)
     };
-
-    const whole = Math.floor(amount);
-    const decimal = amount - whole;
-
-    // Find closest fraction
-    let closestFraction = '';
-    let closestDiff = Infinity;
-    
-    for (const [dec, frac] of Object.entries(fractions)) {
-      const diff = Math.abs(decimal - parseFloat(dec));
-      if (diff < closestDiff && diff < 0.05) {
-        closestDiff = diff;
-        closestFraction = frac;
-      }
-    }
-
-    if (closestFraction && whole > 0) {
-      return `${whole} ${closestFraction}`;
-    } else if (closestFraction) {
-      return closestFraction;
-    } else if (amount < 1) {
-      return amount.toFixed(2);
-    } else {
-      return amount % 1 === 0 ? amount.toString() : amount.toFixed(1);
-    }
   };
 
   const scaledIngredients = useMemo(() => {

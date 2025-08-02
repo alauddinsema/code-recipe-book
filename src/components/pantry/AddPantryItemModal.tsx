@@ -30,7 +30,7 @@ const AddPantryItemModal: React.FC<AddPantryItemModalProps> = ({ categories, onI
   });
 
   const commonUnits = [
-    'pieces', 'lbs', 'oz', 'kg', 'g', 'cups', 'tbsp', 'tsp', 'ml', 'l', 'fl oz', 'cans', 'bottles', 'packages'
+    'pieces', 'kg', 'g', 'lbs', 'oz', 'cups', 'tbsp', 'tsp', 'ml', 'l', 'fl oz', 'cans', 'bottles', 'packages'
   ];
 
   const storageLocations = [
