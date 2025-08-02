@@ -63,7 +63,7 @@ const VoiceAssistantFAB: React.FC<VoiceAssistantFABProps> = ({
     const state = getButtonState();
     
     const baseStyles = `
-      fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full shadow-lg
+      fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full shadow-lg
       flex items-center justify-center transition-all duration-300
       transform hover:scale-110 active:scale-95
     `;
@@ -121,7 +121,7 @@ const VoiceAssistantFAB: React.FC<VoiceAssistantFABProps> = ({
 
       {/* Status Indicator */}
       {(isListening || isSpeaking) && (
-        <div className="fixed bottom-40 right-4 z-30 bg-black bg-opacity-75 text-white px-3 py-2 rounded-lg text-sm font-medium">
+        <div className="fixed bottom-36 right-4 z-30 bg-black bg-opacity-75 text-white px-3 py-2 rounded-lg text-sm font-medium">
           {isSpeaking ? (
             <div className="flex items-center space-x-2">
               <SpeakerWaveIcon className="w-4 h-4 animate-pulse" />
