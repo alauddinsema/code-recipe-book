@@ -1,0 +1,54 @@
+# Netlify headers file for proper MIME types and security
+
+# JavaScript modules
+/assets/*.js
+  Content-Type: application/javascript
+
+# CSS files
+/assets/*.css
+  Content-Type: text/css
+
+# Web manifest
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+
+/site.webmanifest
+  Content-Type: application/manifest+json
+
+# Service worker
+/sw.js
+  Content-Type: application/javascript
+  Service-Worker-Allowed: /
+
+# Font files
+/*.woff2
+  Content-Type: font/woff2
+
+/*.woff
+  Content-Type: font/woff
+
+/*.ttf
+  Content-Type: font/ttf
+
+# Images
+/*.png
+  Content-Type: image/png
+
+/*.jpg
+  Content-Type: image/jpeg
+
+/*.jpeg
+  Content-Type: image/jpeg
+
+/*.svg
+  Content-Type: image/svg+xml
+
+/*.webp
+  Content-Type: image/webp
+
+# Security headers for all files
+/*
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

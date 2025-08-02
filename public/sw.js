@@ -66,6 +66,11 @@ self.addEventListener('fetch', (event) => {
         if (event.request.destination === 'document') {
           return caches.match('/');
         }
+        // For other resources, return a proper error response
+        return new Response(null, {
+          status: 404,
+          statusText: 'Resource Not Found'
+        });
       })
   );
 });
@@ -189,7 +194,10 @@ async function handleImageRequest(request) {
     }
 
     // Return placeholder image or error
-    return new Response('', { status: 404 });
+    return new Response(null, {
+      status: 404,
+      statusText: 'Image Not Found'
+    });
   }
 }
 
