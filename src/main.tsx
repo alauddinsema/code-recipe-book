@@ -65,6 +65,46 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Remove any accessibility overlays or debugging elements that might cause white space
+const removeAccessibilityOverlays = () => {
+  const selectors = [
+    '#sub-frame-error',
+    'div[id*="sub-frame"]',
+    'div[id*="error"]',
+    'div[class*="devtools"]',
+    'div[class*="debug"]',
+    'div[role="generic"][style*="background"]',
+    'div[style*="font: 15px system-ui"]',
+    'div[data-accessibility]',
+    'div[class*="accessibility-overlay"]',
+    'div[class*="inspector"]',
+    'div[id*="inspector"]'
+  ];
+
+  selectors.forEach(selector => {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(element => {
+      if (element && element.parentNode) {
+        element.parentNode.removeChild(element);
+      }
+    });
+  });
+};
+
+// Run immediately and periodically to catch dynamically created overlays
+removeAccessibilityOverlays();
+setInterval(removeAccessibilityOverlays, 1000);
+
+// Also run when DOM changes
+const observer = new MutationObserver(() => {
+  removeAccessibilityOverlays();
+});
+
+observer.observe(document.body, {
+  childList: true,
+  subtree: true
+});
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

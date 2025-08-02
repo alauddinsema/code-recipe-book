@@ -44,8 +44,29 @@
   div[id*="sub-frame"],
   div[id*="error"],
   div[class*="devtools"],
-  div[class*="debug"] {
+  div[class*="debug"],
+  #sub-frame-error,
+  div[id="sub-frame-error"],
+  div[role="generic"][style*="background"],
+  div[style*="font: 15px system-ui"],
+  div[style*="color: rgb(255, 255, 255)"],
+  div[data-accessibility],
+  div[aria-label*="accessibility"],
+  div[class*="accessibility-overlay"],
+  div[class*="inspector"],
+  div[id*="inspector"],
+  div[class*="overlay"][style*="position: fixed"],
+  div[class*="overlay"][style*="position: absolute"] {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    z-index: -1 !important;
   }
 }
 
