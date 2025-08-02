@@ -48,6 +48,9 @@ function App() {
                 toastOptions={{
                   duration: 4000,
                   className: 'dark:bg-gray-800 dark:text-white',
+                  style: {
+                    zIndex: 9999
+                  }
                 }}
               />
 

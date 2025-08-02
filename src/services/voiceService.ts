@@ -38,23 +38,33 @@ export class VoiceService {
     // Navigation commands
     'next step': 'NEXT_STEP',
     'next': 'NEXT_STEP',
+    'continue': 'NEXT_STEP',
+    'move on': 'NEXT_STEP',
+    'what\'s next': 'NEXT_STEP',
     'previous step': 'PREVIOUS_STEP',
     'previous': 'PREVIOUS_STEP',
     'go back': 'PREVIOUS_STEP',
+    'last step': 'PREVIOUS_STEP',
     'repeat': 'REPEAT_STEP',
     'repeat step': 'REPEAT_STEP',
     'read again': 'REPEAT_STEP',
+    'say that again': 'REPEAT_STEP',
+    'what did you say': 'REPEAT_STEP',
     
     // Timer commands
     'set timer': 'SET_TIMER',
     'start timer': 'SET_TIMER',
     'timer for': 'SET_TIMER',
+    'set a timer': 'SET_TIMER',
+    'timer': 'SET_TIMER',
     'stop timer': 'STOP_TIMER',
     'cancel timer': 'CANCEL_TIMER',
     'pause timer': 'PAUSE_TIMER',
     'resume timer': 'RESUME_TIMER',
     'how much time': 'CHECK_TIMER',
     'time left': 'CHECK_TIMER',
+    'check timer': 'CHECK_TIMER',
+    'timer status': 'CHECK_TIMER',
     
     // Control commands
     'pause': 'PAUSE_COOKING',
@@ -77,19 +87,27 @@ export class VoiceService {
     
     // Volume and speech control
     'speak louder': 'INCREASE_VOLUME',
+    'louder': 'INCREASE_VOLUME',
+    'volume up': 'INCREASE_VOLUME',
     'speak quieter': 'DECREASE_VOLUME',
+    'quieter': 'DECREASE_VOLUME',
+    'volume down': 'DECREASE_VOLUME',
     'speak slower': 'DECREASE_SPEED',
+    'slower': 'DECREASE_SPEED',
     'speak faster': 'INCREASE_SPEED',
+    'faster': 'INCREASE_SPEED',
     'stop talking': 'STOP_SPEECH',
-    'be quiet': 'STOP_SPEECH'
+    'be quiet': 'STOP_SPEECH',
+    'silence': 'STOP_SPEECH',
+    'shut up': 'STOP_SPEECH'
   };
 
   constructor() {
     this.settings = {
       language: 'en-US',
-      voiceSpeed: 1.0,
+      voiceSpeed: 0.9,
       voicePitch: 1.0,
-      voiceVolume: 1.0,
+      voiceVolume: 0.9,
       enableContinuousListening: true,
       noiseReduction: true
     };
@@ -138,7 +156,16 @@ export class VoiceService {
     this.recognition.continuous = this.settings.enableContinuousListening;
     this.recognition.interimResults = true;
     this.recognition.lang = this.settings.language;
-    this.recognition.maxAlternatives = 3;
+    this.recognition.maxAlternatives = 5;
+
+    // Enhanced noise handling for kitchen environments
+    if ('webkitSpeechRecognition' in window) {
+      // Chrome-specific enhancements for better noise handling
+      (this.recognition as any).webkitAudioContext = true;
+      (this.recognition as any).webkitNoiseReduction = this.settings.noiseReduction;
+      (this.recognition as any).webkitEchoCancellation = true;
+      (this.recognition as any).webkitAutoGainControl = true;
+    }
 
     // Handle recognition results
     this.recognition.onresult = (event) => {

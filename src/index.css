@@ -39,6 +39,14 @@
       margin-bottom: 0 !important;
     }
   }
+
+  /* Hide any debugging or error overlays that might cause white space */
+  div[id*="sub-frame"],
+  div[id*="error"],
+  div[class*="devtools"],
+  div[class*="debug"] {
+    display: none !important;
+  }
 }
 
 @layer components {

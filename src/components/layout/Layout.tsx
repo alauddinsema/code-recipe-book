@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import BottomNavigation from './BottomNavigation';
-import VoiceAssistantFAB from '../voice/VoiceAssistantFAB';
+
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -31,10 +31,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Footer />
       </div>
 
-      {/* AI Voice Assistant FAB - Mobile Only */}
-      <div className="md:hidden">
-        <VoiceAssistantFAB />
-      </div>
+
     </div>
   );
 };

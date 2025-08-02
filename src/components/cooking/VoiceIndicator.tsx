@@ -17,7 +17,7 @@ export const VoiceIndicator: React.FC<VoiceIndicatorProps> = ({
   className = ''
 }) => {
   return (
-    <div className={`fixed top-20 right-4 z-50 ${className}`}>
+    <div className={`fixed top-20 right-4 z-30 ${className}`}>
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex items-center space-x-4">
           {/* Listening Indicator */}
