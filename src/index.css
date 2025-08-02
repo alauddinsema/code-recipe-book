@@ -7,10 +7,23 @@
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    height: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   body {
     @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
   }
 }
 

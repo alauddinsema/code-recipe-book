@@ -85,11 +85,6 @@ const BottomNavigation: React.FC = () => {
           );
         })}
       </div>
-
-      {/* Android-style home indicator */}
-      <div className="flex justify-center pb-1">
-        <div className="w-32 h-1 bg-gray-300 dark:bg-gray-600 rounded-full opacity-50"></div>
-      </div>
     </nav>
   );
 };

@@ -15,7 +15,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Navbar />
 
       {/* Main Content - Optimized for bottom navigation */}
-      <main className="flex-1 pb-20 md:pb-0 pt-2">
+      <main className="flex-1 pb-16 md:pb-0 pt-2">
         <div className="max-w-md mx-auto md:max-w-7xl px-4 md:px-6 lg:px-8">
           {children}
         </div>
